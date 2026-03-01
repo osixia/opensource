@@ -1,0 +1,111 @@
+site_name: Osixia / Open Source
+site_description: Osixia Open Source Projects Documentation
+site_author: Bertrand Gouny
+site_url: https://opensource.osixia.net
+
+copyright: Osixia - Information Technology Oasis. 🌴
+
+repo_name: osixia/opensource
+repo_url: https://github.com/osixia/opensource
+
+edit_uri: edit/main/docs/
+
+nav:
+  - Home:
+    - index.md
+  - Projects: 
+    - projects/index.md
+    - Container Images:
+        - projects/container-images/index.md
+        - osixia/baseimage:
+          - projects/container-images/baseimage/index.md
+          - projects/container-images/baseimage/quick-start.md
+          - projects/container-images/baseimage/how-it-works.md
+          - projects/container-images/baseimage/advanced-user-guide.md
+          - '🎮 Tutorials':
+            - projects/container-images/baseimage/tutorials/index.md
+            - projects/container-images/baseimage/tutorials/nginx.md
+            - projects/container-images/baseimage/tutorials/nginx-php-fpm.md
+          - '🤖 Container Command':
+            - projects/container-images/baseimage/container-command/index.md
+            - projects/container-images/baseimage/container-command/install.md
+            - Entrypoint Command:
+              - projects/container-images/baseimage/container-command/entrypoint/index.md
+              - projects/container-images/baseimage/container-command/entrypoint/generate.md
+              - projects/container-images/baseimage/container-command/entrypoint/thanks.md
+            - Runtime Commands:
+              - projects/container-images/baseimage/container-command/runtime/packages.md
+              - projects/container-images/baseimage/container-command/runtime/processes.md
+              - projects/container-images/baseimage/container-command/runtime/services.md
+            - projects/container-images/baseimage/container-command/environment.md
+            - projects/container-images/baseimage/container-command/filesystem.md
+            - Logger Command:
+              - projects/container-images/baseimage/container-command/logger/index.md
+              - projects/container-images/baseimage/container-command/logger/error.md
+              - projects/container-images/baseimage/container-command/logger/warning.md
+              - projects/container-images/baseimage/container-command/logger/info.md
+              - projects/container-images/baseimage/container-command/logger/debug.md
+              - projects/container-images/baseimage/container-command/logger/trace.md
+              - level:
+                - projects/container-images/baseimage/container-command/logger/level/index.md
+                - projects/container-images/baseimage/container-command/logger/level/eq.md
+                - projects/container-images/baseimage/container-command/logger/level/ne.md
+                - projects/container-images/baseimage/container-command/logger/level/gt.md
+                - projects/container-images/baseimage/container-command/logger/level/ge.md
+                - projects/container-images/baseimage/container-command/logger/level/lt.md
+                - projects/container-images/baseimage/container-command/logger/level/le.md
+                - projects/container-images/baseimage/container-command/logger/level/show.md
+        - osixia/keepalived:
+          - projects/container-images/keepalived/index.md
+          - projects/container-images/keepalived/quick-start.md
+          - projects/container-images/keepalived/environment-variables.md
+  - contribute.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+theme:
+  name: material
+  features:
+    - navigation.top
+    - navigation.tabs
+    - navigation.indexes
+    - navigation.footer
+    - toc.integrate
+    - content.action.edit
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+  logo: assets/images/osixia-logo.png
+  favicon: assets/images/osixia-logo.png
+
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+
+extra:
+  homepage: https://opensource.osixia.net
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/osixia
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/u/osixia
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/osixia
+
+extra_css:
+  - assets/stylesheets/main.css
