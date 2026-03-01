@@ -1,0 +1,25 @@
+[data-md-color-primary="white"] {
+    --md-typeset-a-color: #f4511f;
+}
+
+.md-typeset .md-button {
+    color: var(--md-accent-fg-color);
+    border-color: var(--md-accent-fg-color);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.md-typeset .md-button:hover {
+    color: var(--md-primary-fg-color);
+    border-color: #f4511f;
+    background-color: #f4511f;
+}
+
+.md-typeset .md-button--primary {
+    color: var(--md-primary-fg-color);
+    background-color: var(--md-accent-fg-color);
+}
+
+.md-header__source, .md-nav__source {
+  display: none;
+}
