@@ -7,7 +7,7 @@ Usage:
 Aliases:
   level, lvl
 
-Comparison commands:
+Comparison Commands:
   eq          Equals
   ne          Not equals
   gt          Greater than
