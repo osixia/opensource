@@ -1,0 +1,20 @@
+[data-md-color-primary="white"] {
+    --md-typeset-a-color: #f4511f;
+}
+
+.md-typeset .md-button {
+    color: var(--md-accent-fg-color);
+    border-color: var(--md-accent-fg-color);
+}
+
+.md-typeset .md-button:hover {
+    color: var(--md-primary-fg-color);
+    border-color: #f4511f;
+    background-color: #f4511f;
+}
+
+.md-typeset .md-button--primary {
+    color: var(--md-primary-fg-color);
+    background-color: var(--md-accent-fg-color);
+}
+
