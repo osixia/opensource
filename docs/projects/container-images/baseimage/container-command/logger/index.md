@@ -1,4 +1,4 @@
-# Logger command
+# Logger Command
 
 ```
 Logger subcommands

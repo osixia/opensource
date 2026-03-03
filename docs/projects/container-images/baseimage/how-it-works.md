@@ -1,4 +1,4 @@
-# 🧩 How it works
+# 🧩 How It Works
 
 Quick overwiew of project files :
 
@@ -97,7 +97,7 @@ COPY environment /container/environment
 ```
 Finally, copy the `environment` directory, which defines the default environment variables, into the image at `/container/environment`.
 
-## Service files
+## Service Files
 
 This section describes all files used by the container command within a service directory. Additional files may also be included without impacting the service behavior.
 
@@ -131,11 +131,11 @@ This script is executed once `process.sh` has concluded.
 The `.priority` file establishes the sequence in which services `install.sh`, `startup.sh` or `finish.sh` scripts are invoked.
 The higher the number, the greater the priority. The default is `500`.
 
-### Optional service files
+### Optional Service Files
 
 #### .optional
 This file indicates that the service is optional and is not installed by `container services install` by default.
-It can be incorporated later via the `container services require service-1` command.
+It can be incorporated later via the `container services require service-name` command.
 
 #### download.sh
 This script is called during container build to download optional service resources.
@@ -154,7 +154,7 @@ RUN container services install \
     && container services link
 ```
 
-### Service tags
+### Service Tags
 
 A service directory may contain a `.tags` sub-directory.
 Each file in this directory defines a tag, where the filename is used as the tag name.
@@ -163,7 +163,7 @@ Services and their related processes can then be filtered by tag through the ser
 
 To learn more about tag usage, run `container services status --help`
 
-## Environment files
+## Environment Files
 
 `.env` files in `environment` directory and any sub-directories are loaded before executing services lifeycle script(s) (`startup.sh`, `process.sh` and `finish.sh`) or entrypoint lifecycle pre-commands.
 The variables they contain are defined as environment variables in the container.
@@ -171,5 +171,3 @@ The variables they contain are defined as environment variables in the container
 Files are loaded in alphabetical order, and variables are overwrite if already defined in a previous file.
 
 **Container environment variables set at run time will overwrite value defined in `.env` files.**
-
-

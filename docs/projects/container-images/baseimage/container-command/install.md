@@ -1,4 +1,4 @@
-# Install commands
+# Install Commands
 
 ## install
 

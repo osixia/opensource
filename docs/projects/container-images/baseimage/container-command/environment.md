@@ -1,4 +1,4 @@
-# Environment commands
+# Environment Commands
 
 ## environment-files
 

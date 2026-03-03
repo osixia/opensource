@@ -1,6 +1,6 @@
-# ⚡ Quick start
+# ⚡ Quick Start
 
-## Create your first image in 2 minutes
+## Create Your First Image in 2 Minutes
 
 Generate image templates in the **osixia-baseimage-example** directory
 
@@ -104,7 +104,7 @@ That's it you have a single-process image based on osixia/baseimage.
 
 Detailed documentation regarding the structure, purpose, and usage of the files within the `environment` and `service` directories can be found in their respective `README.md` files.
 
-## Entrypoint options
+## Entrypoint Options
 
 === "Debian"
 

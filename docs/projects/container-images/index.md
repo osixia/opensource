@@ -2,7 +2,7 @@
 hide:
   - footer
 ---
-# Container images
+# Container Images
 
 <div class="grid cards" markdown>
 

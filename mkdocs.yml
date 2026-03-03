@@ -15,25 +15,29 @@ nav:
     - index.md
   - Projects: 
     - projects/index.md
-    - Container images:
+    - Container Images:
         - projects/container-images/index.md
         - osixia/baseimage:
           - projects/container-images/baseimage/index.md
           - projects/container-images/baseimage/quick-start.md
           - projects/container-images/baseimage/how-it-works.md
-          - '🤖 Container command':
+          - '🎮 Tutorials':
+            - projects/container-images/baseimage/tutorials/nginx.md
+            - projects/container-images/baseimage/tutorials/nginx-php-fpm.md
+          - projects/container-images/baseimage/advanced-user-guide.md
+          - '🤖 Container Command':
             - projects/container-images/baseimage/container-command/index.md
             - projects/container-images/baseimage/container-command/install.md
-            - Entrypoint command:
+            - Entrypoint Command:
               - projects/container-images/baseimage/container-command/entrypoint/index.md
               - projects/container-images/baseimage/container-command/entrypoint/generate.md
               - projects/container-images/baseimage/container-command/entrypoint/thanks.md
-            - Runtime commands:
-              - projects/container-images/baseimage/container-command/runtime/processes/packages.md
-              - projects/container-images/baseimage/container-command/runtime/processes/processes.md
-              - projects/container-images/baseimage/container-command/runtime/processes/services.md
+            - Runtime Commands:
+              - projects/container-images/baseimage/container-command/runtime/packages.md
+              - projects/container-images/baseimage/container-command/runtime/processes.md
+              - projects/container-images/baseimage/container-command/runtime/services.md
             - projects/container-images/baseimage/container-command/environment.md
-            - Logger command:
+            - Logger Command:
               - projects/container-images/baseimage/container-command/logger/index.md
               - projects/container-images/baseimage/container-command/logger/error.md
               - projects/container-images/baseimage/container-command/logger/warning.md
@@ -49,10 +53,7 @@ nav:
                 - projects/container-images/baseimage/container-command/logger/level/lt.md
                 - projects/container-images/baseimage/container-command/logger/level/le.md
                 - projects/container-images/baseimage/container-command/logger/level/show.md
-          - projects/container-images/baseimage/advanced-user-guide.md
-          - '🎮 Tutorials':
-            - projects/container-images/baseimage/tutorials/nginx.md
-            - projects/container-images/baseimage/tutorials/nginx-php-fpm.md
+
   - contribute.md
 
 markdown_extensions:

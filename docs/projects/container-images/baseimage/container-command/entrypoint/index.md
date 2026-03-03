@@ -1,4 +1,4 @@
-# Entrypoint command
+# Entrypoint Command
 
 ```
  / _ \ ___(_)_  _(_) __ _   / / __ )  __ _ ___  ___(_)_ __ ___   __ _  __ _  ___ 
