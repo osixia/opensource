@@ -5,6 +5,8 @@
 .md-typeset .md-button {
     color: var(--md-accent-fg-color);
     border-color: var(--md-accent-fg-color);
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 .md-typeset .md-button:hover {
@@ -18,3 +20,6 @@
     background-color: var(--md-accent-fg-color);
 }
 
+.md-header__source {
+  display: none;
+}

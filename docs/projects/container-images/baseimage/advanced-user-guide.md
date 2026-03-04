@@ -1,17 +1,19 @@
 # 🎯 Advanced User Guide
 
-## Choose container lifecycle steps to run
+## Passing Arguments to process.sh
 
-## Run extra commands
+## Controlling Container Lifecycle Steps
 
-## Run multi-process image process separately
+## Running Extra Commands
 
-## Optimise CI/CD pipeline
+## Running Multi-Process Images in Separate Containers
 
-## Debug container
+## CI/CD Pipeline Optimization
 
-## Run read-only and rootless containers
+## Container Debugging
 
-## Container Logger
+## Running Read-Only & Rootless Containers
 
-## Known limitations
+## Container Logging
+
+## Limitations

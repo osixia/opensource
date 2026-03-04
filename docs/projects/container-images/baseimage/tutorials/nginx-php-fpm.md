@@ -1,1 +1,1 @@
-# Nginx + php-fpm multi-process image
+# Multi-Process Nginx + PHP-FPM Image

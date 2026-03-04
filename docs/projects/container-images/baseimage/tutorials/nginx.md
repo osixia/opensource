@@ -1,1 +1,1 @@
-# Nginx single-process image
+# Single-Process Nginx Image

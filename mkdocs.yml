@@ -1,5 +1,5 @@
 site_name: Osixia / Open Source
-site_description: Osixia Open Source projects documentation
+site_description: Osixia Open Source Projects Documentation
 site_author: Bertrand Gouny
 site_url: https://opensource.osixia.net
 
@@ -23,6 +23,7 @@ nav:
           - projects/container-images/baseimage/how-it-works.md
           - projects/container-images/baseimage/advanced-user-guide.md
           - '🎮 Tutorials':
+            - projects/container-images/baseimage/tutorials/index.md
             - projects/container-images/baseimage/tutorials/nginx.md
             - projects/container-images/baseimage/tutorials/nginx-php-fpm.md
           - '🤖 Container Command':
@@ -53,7 +54,6 @@ nav:
                 - projects/container-images/baseimage/container-command/logger/level/lt.md
                 - projects/container-images/baseimage/container-command/logger/level/le.md
                 - projects/container-images/baseimage/container-command/logger/level/show.md
-
   - contribute.md
 
 markdown_extensions:
