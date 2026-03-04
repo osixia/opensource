@@ -2,22 +2,6 @@
 
 Welcome to the **centralized documentation repository for Osixia’s open source projects.**
 
-This repository serves as the main entry point for discovering, understanding, and using the open source solutions developed and maintained by **Osixia**.
-
-[opensource.osixia.net](https://opensource.osixia.net)
-
-![osixia/opensource illustration.](./docs/assets/images/osixia-opensource-landing.png)
-
-- [Osixia Open Source Projects Documentation](#osixia-open-source-projects-documentation)
-  - [🪪 About](#-about)
-  - [🏗️ Projects Covered](#️-projects-covered)
-  - [🗂️ Documentation Structure](#️-documentation-structure)
-  - [♥ Contributing](#-contributing)
-  - [💬 Community \& Support](#-community--support)
-  - [🔓 License](#-license)
-
-## 🪪 About
-
 Osixia specializes in cloud-native infrastructure, containerization and secure deployments.
 
 Through our GitHub organization, we publish and maintain several open source projects used both internally and by the broader community.
@@ -29,7 +13,16 @@ This repository aims to:
 - Make adoption and contribution easier for the community
 - Centralize best practices and examples
 
-## 🏗️ Projects Covered
+![osixia/opensource illustration.](./docs/assets/images/osixia-opensource-landing.png)
+
+- [Osixia Open Source Projects Documentation](#osixia-open-source-projects-documentation)
+  - [📦 Projects Covered](#️-projects-covered)
+  - [🗂️ Documentation Structure](#️-documentation-structure)
+  - [🔀  Contributing](#-contributing)
+  - [💬 Community \& Support](#-community--support)
+  - [🔓 License](#-license)
+
+## 📦 Projects Covered
 
 This documentation includes (but is not limited to) the following projects:
 
@@ -61,7 +54,7 @@ Typical structure:
 └──  mkdocs.yml
 ```
 
-## ♥ Contributing
+## 🔀  Contributing
 
 Contributions are welcome and appreciated ✨
 
@@ -87,7 +80,6 @@ If you are contributing documentation updates, please ensure:
 - Accurate configuration references
 
 Please keep documentation technical, precise, and production-oriented.
-
 
 ## 💬 Community & Support
 
