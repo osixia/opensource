@@ -21,10 +21,10 @@ nav:
           - projects/container-images/baseimage/index.md
           - projects/container-images/baseimage/quick-start.md
           - projects/container-images/baseimage/how-it-works.md
+          - projects/container-images/baseimage/advanced-user-guide.md
           - '🎮 Tutorials':
             - projects/container-images/baseimage/tutorials/nginx.md
             - projects/container-images/baseimage/tutorials/nginx-php-fpm.md
-          - projects/container-images/baseimage/advanced-user-guide.md
           - '🤖 Container Command':
             - projects/container-images/baseimage/container-command/index.md
             - projects/container-images/baseimage/container-command/install.md
