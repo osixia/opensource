@@ -20,6 +20,6 @@
     background-color: var(--md-accent-fg-color);
 }
 
-.md-header__source {
+.md-header__source, .md-nav__source {
   display: none;
 }
