@@ -1,7 +1,5 @@
 # Osixia Open Source Projects Documentation
 
-Welcome to the **centralized documentation repository for Osixia’s open source projects.**
-
 Osixia specializes in cloud-native infrastructure, containerization and secure deployments.
 
 Through our GitHub organization, we publish and maintain several open source projects used both internally and by the broader community.
