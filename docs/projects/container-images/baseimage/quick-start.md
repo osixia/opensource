@@ -4,7 +4,7 @@
 
 Generate image templates in the **osixia-baseimage-example** directory
 
-```
+``` bash
 mkdir osixia-baseimage-example
 ```
 
@@ -32,11 +32,11 @@ mkdir osixia-baseimage-example
 Note: add `--multi-process` to get a multi-process image sample.
 
 List generated directories and files in **osixia-baseimage-example** directory
-```
+``` bash
 tree -a osixia-baseimage-example
 ```
 
-```
+``` bash
 osixia-baseimage-example
 ├── Dockerfile
 ├── environment
@@ -53,7 +53,7 @@ osixia-baseimage-example
 ```
 
 Take a quick look at the Dockerfile
-```
+``` Dockerfile
 FROM osixia/baseimage
 
 ARG IMAGE="osixia/baseimage-example:latest"
@@ -76,18 +76,18 @@ COPY environment /container/environment
 ```
 
 Build the image **example/my-image:develop** using files in the **osixia-baseimage-example** directory
-```
+``` bash
 docker build --tag example/my-image:develop --build-arg IMAGE example/my-image:develop  ./osixia-baseimage-example
 ```
 
 Note: `--build-arg IMAGE example/my-image:develop` is used to set the image name inside the container
 
 Run **example/my-image:develop** image
-```
+``` bash
 docker run example/my-image:develop
 ```
 
-```
+``` log
 2026-02-26T11:30:59+01:00 INFO    Container image: example/my-image:develop
 2026-02-26T11:30:59+01:00 INFO    Loading environment variables from /container/environment/.env ...
 2026-02-26T11:30:59+01:00 INFO    Running /container/services/service-1/startup.sh ...
@@ -168,7 +168,7 @@ Flags:
 
   -w, --unsecure-fast-write                 disable fsync and friends with eatmydata LD_PRELOAD library
 
-  -d, --debug                               set log level to debug and install debug packages
+  -d, --debug                               set log level to debug, install debug packages and run Bash
   -i, --install-packages strings            install packages
 
   -v, --version                             print container image version

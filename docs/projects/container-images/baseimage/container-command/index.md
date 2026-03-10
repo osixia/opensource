@@ -21,6 +21,9 @@ Environment Commands:
   envsubst           Envsubst
   envsubst-templates Envsubst templates
 
+Filesystem Command:
+  watch              Watch file(s)
+
 Logger Command:
   logger             Logger subcommands
 

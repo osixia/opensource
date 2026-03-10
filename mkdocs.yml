@@ -38,6 +38,7 @@ nav:
               - projects/container-images/baseimage/container-command/runtime/processes.md
               - projects/container-images/baseimage/container-command/runtime/services.md
             - projects/container-images/baseimage/container-command/environment.md
+            - projects/container-images/baseimage/container-command/filesystem.md
             - Logger Command:
               - projects/container-images/baseimage/container-command/logger/index.md
               - projects/container-images/baseimage/container-command/logger/error.md
