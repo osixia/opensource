@@ -55,6 +55,10 @@ nav:
                 - projects/container-images/baseimage/container-command/logger/level/lt.md
                 - projects/container-images/baseimage/container-command/logger/level/le.md
                 - projects/container-images/baseimage/container-command/logger/level/show.md
+        - osixia/keepalived:
+          - projects/container-images/keepalived/index.md
+          - projects/container-images/keepalived/quick-start.md
+          - projects/container-images/keepalived/environment-variables.md
   - contribute.md
 
 markdown_extensions:

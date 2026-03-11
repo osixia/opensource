@@ -9,6 +9,9 @@ hide:
 [osixia/baseimage](baseimage/index.md)
 { .card }
 
+[osixia/keepalived](keepalived/index.md)
+{ .card }
+
 </div>
 
 ![Container images](../../assets/images/osixia-container.png)
