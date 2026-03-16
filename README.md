@@ -24,10 +24,10 @@ This repository aims to:
 
 This documentation includes (but is not limited to) the following projects:
 
-| Project                 | Description                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------ |
-| **container-baseimage** | A container base image to build reliable single- or multi-process images quickly 🐳✨🌴 |
-| **container-keepalived** | Keepalived container image 🐳🛟🌴  |
+| Project                  | Description                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| **[container-baseimage](https://github.com/osixia/container-baseimage)**  | A container base image to build reliable single- or multi-process images quickly 🐳✨🌴 |
+| **[container-keepalived](https://github.com/osixia/container-keepalived/)** | Keepalived container image 🐳🛟🌴                                                       |
 
 
 ## 🗂️ Documentation Structure
