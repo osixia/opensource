@@ -58,6 +58,7 @@ nav:
         - osixia/openldap:
           - projects/container-images/openldap/index.md
   - contribute.md
+  - sponsor.md
 
 markdown_extensions:
   - admonition
