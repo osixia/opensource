@@ -19,3 +19,5 @@ Your sponsorship helps to:
 
 **👉 Become a sponsor:**
 [https://github.com/sponsors/osixia](https://github.com/sponsors/osixia)
+
+![Sponsor](assets/images/osixia-sponsor.png)

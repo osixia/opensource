@@ -11,4 +11,4 @@ hide:
 
 </div>
 
-![Projects](../assets/images/osixia-projects.jpg)
+![Projects](../assets/images/osixia-projects.png)
