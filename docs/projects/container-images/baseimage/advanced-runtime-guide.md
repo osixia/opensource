@@ -155,3 +155,16 @@ By default:
 - multiple running processes: restart is enabled
 
 Override this with `--restart=true` or `--restart=false`.
+
+When restart is enabled, a failed process is retried with an exponential backoff
+delay, starting at 100 milliseconds and capped at 5 seconds. The delay resets
+after an execution lasting at least 30 seconds. Use `--no-restart-delay` to
+disable this delay and retry immediately:
+
+```bash
+docker run --rm my-image --restart=true --no-restart-delay
+```
+
+`--no-restart-delay` does not enable restarting on its own and does not change
+the wait for intentionally stopped processes. Immediate retries can consume
+significant CPU if a process keeps failing repeatedly.
