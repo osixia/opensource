@@ -57,6 +57,20 @@ nav:
           - projects/container-images/keepalived/environment-variables.md
         - osixia/openldap:
           - projects/container-images/openldap/index.md
+          - projects/container-images/openldap/quickstart.md
+          - projects/container-images/openldap/how-it-works.md
+          - '🚀 Bootstrap':
+            - projects/container-images/openldap/bootstrap/index.md
+            - projects/container-images/openldap/bootstrap/access-control.md
+            - projects/container-images/openldap/bootstrap/overlays.md
+            - projects/container-images/openldap/bootstrap/schemas.md
+            - projects/container-images/openldap/bootstrap/custom-ldif.md
+          - projects/container-images/openldap/tls.md
+          - projects/container-images/openldap/replication.md
+          - projects/container-images/openldap/backup-restore.md
+          - projects/container-images/openldap/upgrade.md
+          - projects/container-images/openldap/ldap-toolkit.md
+          - projects/container-images/openldap/environment-variables.md
   - contribute.md
   - sponsor.md
 
