@@ -54,6 +54,9 @@ nav:
         - osixia/keepalived:
           - projects/container-images/keepalived/index.md
           - projects/container-images/keepalived/quickstart.md
+          - projects/container-images/keepalived/configuration.md
+          - projects/container-images/keepalived/troubleshooting.md
+          - projects/container-images/keepalived/upgrade.md
           - projects/container-images/keepalived/environment-variables.md
         - osixia/openldap:
           - projects/container-images/openldap/index.md

@@ -11,3 +11,21 @@
 [Keepalived](https://keepalived.org/) container image for VRRP high availability and VIP failover with dynamic configuration and hot reload.
 
 ![Container Keepalived](../../../assets/images/osixia-container-keepalived.png)
+
+## Features
+
+- **Ready in one command**: a virtual IP shared between your nodes, configured with a few environment variables.
+- **Three levels of configuration**: environment variables, your own template, or your own `keepalived.conf`.
+- **Hot reload**: Keepalived reloads when its configuration file changes, without restarting the container.
+- **State changes in the container logs**: `MASTER`, `BACKUP` and `FAULT` transitions are logged, and you can plug in your own notify script.
+- **Up-to-date Keepalived**: built from the upstream sources on Alpine, with JSON status support.
+
+## Start Here
+
+- New to `osixia/keepalived`? Start with the [Quickstart](quickstart.md) to share a virtual IP between two nodes.
+- Need more than the default setup? See [Configuration](configuration.md).
+- Something is not working? Read [Troubleshooting](troubleshooting.md).
+- Coming from `osixia/keepalived` 2.1.5 or older? Read [Upgrade](upgrade.md).
+- Looking for a setting? All of them are listed in [Environment Variables](environment-variables.md).
+
+This image is based on [osixia/baseimage](../baseimage/index.md).

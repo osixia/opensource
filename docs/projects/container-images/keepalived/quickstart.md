@@ -1,53 +1,97 @@
 # ⚡ Quickstart
 
-This image requires the `ip_vs` kernel module to be loaded on the host (`modprobe ip_vs`).  
-It must be run with the following Docker options:
+This guide shares one virtual IP (VIP) between two hosts. The VIP is held by one node at a time and moves to the other one when that node goes down.
+
+| Host   | Address         |
+| ------ | --------------- |
+| Node 1 | `192.168.1.10`  |
+| Node 2 | `192.168.1.11`  |
+| VIP    | `192.168.1.231` |
+
+## Requirements
+
+- The `ip_vs` kernel module loaded on each host (`modprobe ip_vs`).
+- Host networking (`--network=host`), so Keepalived manages the real interface of the host.
+- The `NET_ADMIN`, `NET_RAW` and `NET_BROADCAST` capabilities.
+
+## Run Two Nodes
+
+Run one container per host. Only the peer address and the priority change between the two.
+
+=== "Node 1"
+
+    ``` bash
+    docker run --detach --name keepalived \
+      --network=host --cap-add=NET_ADMIN --cap-add=NET_RAW --cap-add=NET_BROADCAST \
+      --env KEEPALIVED_INTERFACE="eth0" \
+      --env KEEPALIVED_VIRTUAL_IPS="192.168.1.231" \
+      --env KEEPALIVED_UNICAST_PEERS="192.168.1.11" \
+      --env KEEPALIVED_PRIORITY="150" \
+      --env KEEPALIVED_PASSWORD="s3cret" \
+      osixia/keepalived
+    ```
+
+=== "Node 2"
+
+    ``` bash
+    docker run --detach --name keepalived \
+      --network=host --cap-add=NET_ADMIN --cap-add=NET_RAW --cap-add=NET_BROADCAST \
+      --env KEEPALIVED_INTERFACE="eth0" \
+      --env KEEPALIVED_VIRTUAL_IPS="192.168.1.231" \
+      --env KEEPALIVED_UNICAST_PEERS="192.168.1.10" \
+      --env KEEPALIVED_PRIORITY="100" \
+      --env KEEPALIVED_PASSWORD="s3cret" \
+      osixia/keepalived
+    ```
+
+=== "Docker Compose (node 1)"
+
+    ``` yaml
+    services:
+      keepalived:
+        image: osixia/keepalived
+        container_name: keepalived
+        network_mode: host
+        restart: unless-stopped
+        cap_add:
+          - NET_ADMIN
+          - NET_RAW
+          - NET_BROADCAST
+        environment:
+          KEEPALIVED_INTERFACE: "eth0"
+          KEEPALIVED_VIRTUAL_IPS: "192.168.1.231"
+          KEEPALIVED_UNICAST_PEERS: "192.168.1.11"
+          KEEPALIVED_PRIORITY: "150"
+          KEEPALIVED_PASSWORD: "s3cret"
+    ```
+
+Three things to get right:
+
+- `KEEPALIVED_INTERFACE` is the interface name **on the host** (`eth0`, `ens18`, `enp2s0`...). Check it with `ip -br addr`.
+- `KEEPALIVED_UNICAST_PEERS` lists the **other** nodes only, never the node itself.
+- `KEEPALIVED_PASSWORD` must be the same on every node. VRRP only uses its first 8 characters.
+
+With several values, separate them with spaces: `KEEPALIVED_VIRTUAL_IPS="192.168.1.231 192.168.1.232"`.
+
+## Check That It Works
+
+The node with the highest priority takes the VIP:
 
 ``` bash
-docker run --cap-add=NET_ADMIN --cap-add=NET_RAW --cap-add=NET_BROADCAST --network=host osixia/keepalived
+docker logs keepalived
+# ... INFO    VRRP INSTANCE VI_1 entered MASTER state
+
+ip addr show eth0
+# inet 192.168.1.10/24 ...
+# inet 192.168.1.231/32 scope global eth0
 ```
 
-## Using your own Keepalived configuration
+Stop the container on node 1: within a few seconds node 2 logs `entered MASTER state` and holds the VIP.
 
-This image ships with a Keepalived configuration template that can be customized using environment variables for quick bootstrapping.  
+Start node 1 again: it comes back as `BACKUP` and the VIP **stays on node 2**. This is intended, see [Failback](configuration.md#failback).
 
-You can also provide your own `keepalived.conf` by mounting it at the path defined by `KEEPALIVED_CONF` (default: `/etc/keepalived/keepalived.conf`):
+## Next Steps
 
-``` bash
-docker run --volume /data/my-keepalived.conf:/etc/keepalived/keepalived.conf osixia/keepalived
-```
-
-## Passing command-line arguments to Keepalived
-
-The `osixia/keepalived` container allows you to pass additional command-line arguments directly to the keepalived binary.
-
-Arguments specified after `--` are forwarded to the keepalived process inside the container:
-
-``` bash
-docker run osixia/keepalived -- --dont-release-ipvs
-```
-
-## Debugging
-
-To debug the container manually, you can start it with an interactive shell.
-
-The `--debug` option from `osixia/baseimage` enables debug logging, installs debugging tools, and launches an interactive shell.
-
-If Keepalived keeps crashing, you can add `--skip-process` to start the container without launching service processes.
-
-``` bash
-docker run -it osixia/keepalived --debug
-docker run -it osixia/keepalived --skip-process --debug 
-```
-
-You can also enable Keepalived debugging options:
-``` bash
-docker run osixia/keepalived -- --log-detail --dump-conf
-```
-
-To see all available command-line options:
-``` bash
-docker run --rm osixia/keepalived --help # osixia/baseimage options
-docker run --rm osixia/keepalived -x keepalived -- --help # keepalived command-line options
-```
- 
+- [Configuration](configuration.md): use your own template or your own `keepalived.conf`, hot reload, notify script.
+- [Troubleshooting](troubleshooting.md): debugging options and common issues.
+- [Environment Variables](environment-variables.md): all settings.
