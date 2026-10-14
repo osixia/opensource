@@ -135,6 +135,7 @@ Useful commands inside a running container:
 
 - `container services status`
 - `container processes status`
+- `container processes check`
 - `container processes stop <name>`
 - `container processes start <name>`
 - `container environment print`
@@ -143,7 +144,7 @@ How debugging works internally:
 
 - process PID files are stored under `/run/container/processes`
 - a `.down` file is used to request a managed process stop
-- stale PID files are cleaned up on startup
+- stop requests and stale PID files from a previous run are cleaned up when the entrypoint starts as PID 1
 - when the entrypoint is PID 1, it reaps zombie processes and can terminate remaining child processes on exit
 
 Practical debugging examples:
@@ -151,6 +152,14 @@ Practical debugging examples:
 ```bash
 docker run --rm -it my-image --bash --log-level debug
 ```
+
+Get a shell without running any service script:
+
+```bash
+docker run --rm -it my-image --skip-all --bash
+```
+
+Run startup scripts, then Bash instead of the services processes, then finish scripts:
 
 ```bash
 docker run --rm -it my-image --skip-process --bash
@@ -314,6 +323,12 @@ container log level eq trace && set -x
 
 This enables shell tracing only when the container log level is exactly `trace`.
 
+Secrets and log levels:
+
+- commands run by `container` are logged with their executable path only at `info` level and in errors: their arguments may hold passwords and are shown at `debug` level
+- package, user and group commands run by `container` keep their full command line, their arguments are not secrets
+- environment variable values are only logged at `debug` level: avoid `debug` and `trace` levels in production when environment variables hold secrets
+
 ## Limitations
 
 Current behavior has a few important constraints:
@@ -325,3 +340,4 @@ Current behavior has a few important constraints:
 - `startup.sh` and `finish.sh` are sequential; only `process.sh` runs concurrently
 - runtime package installation and debug tooling depend on the underlying distribution package manager and privileges
 - environment files are loaded from `/container/environment`; existing process environment variables take precedence, including empty values, and are preserved literally without further interpolation
+- `container` is the container init and must run as PID 1: an init in front of it (`docker run --init`, Compose `init: true`, `tini`) is not supported and disables zombie reaping, `--kill-all` and the cleanup of the previous run state

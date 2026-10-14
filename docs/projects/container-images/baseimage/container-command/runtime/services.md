@@ -24,6 +24,9 @@ Flags:
 Use "container services [command] --help" for more information about a command.
 ```
 
+
+`container services status` only reads `/container/services` and can be run by any user. The other services commands write markers in service directories: they are meant to run in the `Dockerfile`, or at runtime with a user allowed to write in `/container/services`.
+
 ## require
 
 ```

@@ -64,10 +64,11 @@ Flags:
 
   -b, --bash                          run Bash alongside other services or commands
 
-  -k, --kill-all                      kill all remaining container processes on exit (SIGTERM) (default true)
-  -t, --kill-all-timeout duration     force kill remaining processes after timeout (SIGKILL after delay) (default 15s)
   -r, --restart                       restart failed processes (default single-process false, multi-process true)
       --no-restart-delay              disable the delay between process restarts
+
+  -k, --kill-all                      kill all remaining container processes on exit (SIGTERM) (default true)
+  -t, --kill-all-timeout duration     force kill remaining processes after timeout (SIGKILL after delay) (default 15s)
   -a, --keep-alive                    keep container alive after all processes have exited
 
   -w, --fast-write                    faster writes by disabling fsync (useful for CI, risk of data loss)

@@ -71,6 +71,11 @@ Executed as the managed process. It:
 - starts Nginx in the foreground with `daemon off;`
 - forwards any extra entrypoint arguments to Nginx
 
+### `services/nginx/.stop-signal`
+
+Contains `SIGQUIT`: Nginx is stopped gracefully and lets in-flight requests finish,
+instead of the fast shutdown triggered by the default `SIGTERM`.
+
 ## Build
 
 From this directory:
@@ -98,6 +103,7 @@ You should see the generated `Hi!` page with the message from `.env` appended on
 - `install.sh` is used for build-time filesystem preparation.
 - `startup.sh` is used for runtime customization from environment variables.
 - `process.sh` contains the long-running foreground command.
+- `.stop-signal` sets a graceful stop signal for the process.
 - `/run/container` is used for runtime state tracking.
 
 ## Useful Variants

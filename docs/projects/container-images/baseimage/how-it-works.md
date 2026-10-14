@@ -124,12 +124,19 @@ This script specifies the command to be executed.
 For multi-process images, all `process.sh` scripts are launched simultaneously.
 The order defined in the service `.priority` file is irrelevant.
 
+Start the long-running command with `exec`: signals such as `SIGHUP` are forwarded to the `process.sh` main process only,
+and a shell that does not `exec` its command would not pass them on.
+
 ### finish.sh
 This script is executed once `process.sh` has concluded.
 
 ### .priority
 The `.priority` file establishes the sequence in which services `install.sh`, `startup.sh` or `finish.sh` scripts are invoked.
 The smaller the number, the greater the priority. The default is `500`.
+
+### .stop-signal
+The `.stop-signal` file sets the signal sent to stop `process.sh`, for example `SIGQUIT` for a graceful nginx or php-fpm shutdown.
+The default is `SIGTERM`. If the process is still running after `--kill-all-timeout`, it is killed with `SIGKILL`.
 
 ### Optional Service Files
 

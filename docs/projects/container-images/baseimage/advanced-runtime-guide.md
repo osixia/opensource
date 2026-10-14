@@ -48,7 +48,7 @@ Behavior by step:
 - `startup`: runs `--pre-startup-cmd` commands, then every running service `startup.sh` in service priority order.
 - `process`: runs `--pre-process-cmd` commands, then the main command and/or every running service `process.sh`.
 - `finish`: runs `--pre-finish-cmd` commands, then every running service `finish.sh` in service priority order.
-- `exit`: always runs `--pre-exit-cmd` before the container exits.
+- `exit`: always runs `--pre-exit-cmd` before the container exits. A shutdown signal interrupts them, and when a previous step already failed, its exit code is kept.
 
 Useful flags:
 
@@ -63,7 +63,7 @@ Important details:
 - `.priority` affects `install.sh`, `startup.sh`, and `finish.sh`.
 - `.priority` does not affect `process.sh`; all running service processes are started concurrently.
 - `--step process` runs only the process step and skips startup and finish.
-- If `--skip-process` is used together with `--bash`, process services are skipped but Bash still runs.
+- If `--skip-process` or `--step` is used together with `--bash`, Bash replaces the services `process.sh` scripts only: missing downloads and installs, startup and finish scripts still run, and a failing script exits the container before Bash starts. Use `--skip-all --bash` to get a shell without running any service script.
 - Environment files are loaded before lifecycle pre-commands and service scripts, unless `--skip-env-files` is used.
 
 ## Running Extra Commands
@@ -168,3 +168,19 @@ docker run --rm my-image --restart=true --no-restart-delay
 `--no-restart-delay` does not enable restarting on its own and does not change
 the wait for intentionally stopped processes. Immediate retries can consume
 significant CPU if a process keeps failing repeatedly.
+
+Before a process is restarted:
+
+- the reason it ended is logged: a warning with its exit status or signal, or an info line after a clean exit
+- the children left in its process group are stopped with its stop signal, then killed with `SIGKILL` after `--kill-all-timeout`, so old workers cannot keep ports or files used by the new process
+
+## Signals
+
+The entrypoint handles signals as follows:
+
+- `SIGINT`, `SIGTERM` and `SIGQUIT` stop the container: during the process step, services are stopped and finish scripts still run
+- stopping a service sends its stop signal (`SIGTERM`, or the signal set in its `.stop-signal` file) to its whole process group, then `SIGKILL` after `--kill-all-timeout`
+- other signals (`SIGHUP`, `SIGUSR1`, `SIGUSR2`, `SIGWINCH`...) are forwarded to the main process of each service and of the custom command, which handles its children: `docker kill -s HUP` reloads nginx, php-fpm or keepalived
+- `container watch` ignores `SIGHUP`, so a forwarded reload signal does not restart a watching service
+
+`docker stop` kills the container after 10 seconds by default, while `--kill-all-timeout` is `15s`. For a graceful shutdown that may take longer, raise `docker stop --time`, Compose `stop_grace_period` or Kubernetes `terminationGracePeriodSeconds`.

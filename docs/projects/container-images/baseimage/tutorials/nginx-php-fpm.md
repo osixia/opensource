@@ -80,6 +80,26 @@ Executed as the managed PHP-FPM process. It:
 - starts PHP-FPM in the foreground with `--nodaemonize`
 - forwards any extra entrypoint arguments to PHP-FPM
 
+### `services/php-fpm/.stop-signal`
+
+Contains `SIGQUIT`, which requests a graceful PHP-FPM shutdown instead of the
+immediate termination triggered by the default `SIGTERM`.
+
+PHP-FPM also has its own [`process_control_timeout`](https://www.php.net/manual/en/install.fpm.configuration.php),
+which defaults to `0`. With that default, PHP-FPM can immediately escalate to
+`SIGTERM` and interrupt running requests despite receiving `SIGQUIT`.
+
+To allow requests time to finish, configure a nonzero timeout in the `[global]`
+section of `/etc/php/<version>/fpm/php-fpm.conf` during the image build, for example:
+
+```ini
+[global]
+process_control_timeout = 15s
+```
+
+Coordinate this value with `container --kill-all-timeout` (also `15s` by default).
+Both limits apply: whichever expires first can interrupt unfinished requests.
+
 ### `docker-compose.yml`
 
 This example runs the same multi-process image as two single-purpose containers:
@@ -179,6 +199,7 @@ Why this compose example keeps the Unix socket:
 - A multi-process image can be built by layering services across images.
 - `.priority` does not control process start order; Nginx and PHP-FPM processes are started concurrently.
 - `/run/container` can be used as a shared runtime area between services.
+- `.stop-signal` sets a graceful stop signal for each process.
 - One image can still be split at runtime with service-selection flags.
 
 ## Useful Variants
