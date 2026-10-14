@@ -13,6 +13,7 @@ Available Commands:
   start       Start processes
   stop        Stop processes
   status      Print processes status
+  check       Check processes are up
 
 Flags:
   -h, --help   help for processes
@@ -71,3 +72,22 @@ Flags:
   -o, --log-format string   set log format, choices: console, json (default "console")
   -h, --help                help for status
 ```
+
+## check
+
+```
+Check processes are up, for container health checks
+Exit with code 1 if a process is down, intentionally stopped processes excepted
+With no argument: check processes of services linked to the entrypoint
+
+Usage:
+  container processes check [process|tag:name]... [flags]
+
+Flags:
+  -l, --log-level string    set log level, choices: error, warning, info, debug, trace (default "info")
+      --quiet               show errors only
+  -o, --log-format string   set log format, choices: console, json (default "console")
+  -h, --help                help for check
+```
+
+See [Health Checks](../../production-and-integration.md#health-checks) for Docker, Compose and Kubernetes examples.

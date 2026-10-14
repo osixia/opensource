@@ -169,7 +169,7 @@ Why it is needed for process management:
 - runtime state is stored in `/run/container`
 - process PID files and stop markers are created there, including the state used by `container processes`
 - the generator also writes there when used inside a container
-- the entrypoint ensures `/run/container`, `/run/container/processes`, and `/run/container/generator` exist and tries to set them to `0777`
+- the entrypoint ensures `/run/container`, `/run/container/processes`, and `/run/container/generator` exist; directories it creates are set to `0777`, existing ones (image layer, volume, `tmpfs`) are used as is
 
 If your image or runtime flow does not rely on those runtime management features, you may not need `/run/container` to be writable. But process management and many baseimage features assume it is available.
 
@@ -208,6 +208,68 @@ RUN container groups add "${APP_GROUP_GID}" app \
 
 - runtime package installation commands such as `container packages install --debug-tools --update` generally require enough privileges to use the distribution package manager
 - if the container filesystem is read-only, any service that writes outside writable mounts will still fail
+
+## Health Checks
+
+`container processes check` reports whether the container processes are running. It is meant to be used as a Docker health check or a Kubernetes probe:
+
+- it exits with status `0` and prints nothing when every checked process is up
+- it exits with status `1` and logs `<name>: process is down` for each process that is down
+- a process stopped on purpose with `container processes stop` is not reported as down
+- it can be run by any container user, like the other `container processes` commands
+
+With no argument, it checks the processes of the services linked to the entrypoint, the ones the container runs by default. A process waiting to be restarted has no pid file, so it is reported as down until it is running again.
+
+Pass process names or `tag:name` arguments to check a selection. This is required when the container is started with `--exec` or `--skip`: the default check would report the services that are not run as down.
+
+```bash
+container processes check nginx php-fpm
+container processes check tag:web
+```
+
+An unknown tag makes the check fail, so a typo in a health check command does not silently pass.
+
+### Docker
+
+```Dockerfile
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD container processes check
+```
+
+Set `--start-period` to cover the startup step: services are not running yet while `startup.sh` scripts run.
+
+### Docker Compose
+
+```yaml
+services:
+  app:
+    image: my-image
+    healthcheck:
+      test: ["CMD", "container", "processes", "check"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+```
+
+### Kubernetes
+
+```yaml
+livenessProbe:
+  exec:
+    command: ["container", "processes", "check"]
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+```
+
+Notes:
+
+- prefer a `startupProbe` or `initialDelaySeconds` long enough for the startup step, to avoid restarting a container that is still starting
+- a liveness probe restarts the container when a process stays down; with restart enabled (the multi-process default), the supervisor already restarts failed processes, so tune `failureThreshold` above the time a process needs to restart
+- intentionally stopped processes pass the check: use an application-level readiness probe (HTTP, TCP) if a stopped process must remove the pod from service endpoints
+- the check only tells whether processes are running, not whether they work: combine it with application checks when needed
 
 ## Container Logging
 
