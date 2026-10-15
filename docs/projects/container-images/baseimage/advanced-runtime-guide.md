@@ -1,87 +1,76 @@
 # 🎯 Advanced Runtime Guide
 
-## Passing Arguments to `process.sh`
+## PID 1 and Container Init
 
-Any argument passed after the image name at runtime is captured by the baseimage and then handled in one of two ways:
+`container` is the init and supervisor of the container: run it directly as the entrypoint, so it is
+PID 1. Do not place another init in front of it: `docker run --init`, Compose `init: true`, tini or
+docker-init are not supported.
 
-- If at least one service `process.sh` is run, the same argument list is appended to every running `process.sh`.
-- If no service `process.sh` is run, the argument list is treated as a standalone command to execute instead.
-- If no service is run and no command is provided, Bash is started automatically.
+Orphan reaping, the final `--kill-all` cleanup and the cleanup of runtime state at startup only run when
+`container` is PID 1. Its subcommands work with any PID, including in `docker exec`.
 
-Examples:
+## Lifecycle Steps
+
+The entrypoint runs three steps, then exits:
+
+| Step | Runs |
+| --- | --- |
+| `startup` | `--pre-startup-cmd` commands, then the `startup.sh` scripts, one after the other in priority order |
+| `process` | `--pre-process-cmd` commands, then the `process.sh` scripts and/or the custom command, concurrently |
+| `finish` | `--pre-finish-cmd` commands, then the `finish.sh` scripts, one after the other in priority order |
+| exit | `--pre-exit-cmd` commands, then `--kill-all` cleanup |
+
+- Environment files are loaded before the first step, unless `--skip-env-files` is used.
+- `--skip-startup`, `--skip-process` and `--skip-finish` skip a step; `--step startup|process|finish`
+  runs a single one.
+- A failing startup script stops the container: the process and finish steps do not run.
+- Pre-exit commands always run. A shutdown signal interrupts them, and the exit code of a failed step is
+  kept.
+
+## Selecting Services
+
+The entrypoint runs the services linked with `container services link`. Narrow the selection at runtime:
+
+- `--exec name`: run only these services (repeatable)
+- `--skip name`: skip these services (repeatable)
+- `--skip-all`: run no service
+
+Startup and finish scripts only run for the selected services.
+
+The same image can then run as one multi-process container, or as several single-purpose containers:
+
+```bash
+docker run --rm my-image                 # all linked services
+docker run --rm my-image --exec nginx    # only nginx
+docker run --rm my-image --exec php-fpm  # only php-fpm
+```
+
+This gives one build artifact for different deployment topologies, and lets you debug one service
+without starting the others. See the [Nginx + PHP-FPM tutorial](tutorials/nginx-php-fpm.md) for a
+Compose example.
+
+## Passing Arguments
+
+Arguments after the image name (after `--` if they start with a dash) are handled as follows:
+
+- if at least one `process.sh` runs, they are appended to **every** running `process.sh`
+- otherwise, they are run as a command instead of the services
+- with no service and no command, Bash starts
 
 ```bash
 docker run --rm my-image -- --config /etc/my-app.yml
+# runs: /container/services/service-1/process.sh --config /etc/my-app.yml
 ```
 
-If `my-image` has one linked service, its `process.sh` is executed as:
-
-```bash
-/container/services/service-1/process.sh --config /etc/my-app.yml
-```
-
-In a multi-process image, the same arguments are passed to every running service process:
-
-```bash
-docker run --rm my-image -- --verbose
-```
-
-This means:
-
-```bash
-/container/services/service-a/process.sh --verbose
-/container/services/service-b/process.sh --verbose
-```
-
-Use this only when the same runtime arguments make sense for all running services.
-
-## Controlling Container Lifecycle Steps
-
-The entrypoint lifecycle has three steps:
-
-1. `startup`
-2. `process`
-3. `finish`
-
-Behavior by step:
-
-- `startup`: runs `--pre-startup-cmd` commands, then every running service `startup.sh` in service priority order.
-- `process`: runs `--pre-process-cmd` commands, then the main command and/or every running service `process.sh`.
-- `finish`: runs `--pre-finish-cmd` commands, then every running service `finish.sh` in service priority order.
-- `exit`: always runs `--pre-exit-cmd` before the container exits. A shutdown signal interrupts them, and when a previous step already failed, its exit code is kept.
-
-Useful flags:
-
-- `--skip-startup`, `--skip-process`, `--skip-finish`
-- `--step startup|process|finish`
-- `--exec service-name`
-- `--skip service-name`
-- `--skip-all`
-
-Important details:
-
-- `.priority` affects `install.sh`, `startup.sh`, and `finish.sh`.
-- `.priority` does not affect `process.sh`; all running service processes are started concurrently.
-- `--step process` runs only the process step and skips startup and finish.
-- If `--skip-process` or `--step` is used together with `--bash`, Bash replaces the services `process.sh` scripts only: missing downloads and installs, startup and finish scripts still run, and a failing script exits the container before Bash starts. Use `--skip-all --bash` to get a shell without running any service script.
-- Environment files are loaded before lifecycle pre-commands and service scripts, unless `--skip-env-files` is used.
+In a multi-process image, use this only when the same arguments make sense for all running services.
 
 ## Running Extra Commands
 
-There are two distinct ways to run extra commands.
+### Pre-step commands
 
-### 1. Pre-step commands
-
-Use:
-
-- `--pre-startup-cmd`
-- `--pre-process-cmd`
-- `--pre-finish-cmd`
-- `--pre-exit-cmd`
-
-Each flag can be repeated. Commands are split with shell-like parsing, but they are not executed through a shell unless you explicitly call one yourself.
-
-Example:
+`--pre-startup-cmd`, `--pre-process-cmd`, `--pre-finish-cmd` and `--pre-exit-cmd` can be repeated.
+Commands are split like a shell would, but not run through a shell: wrap pipes, redirects or
+expansions in `sh -c`.
 
 ```bash
 docker run --rm my-image \
@@ -89,98 +78,57 @@ docker run --rm my-image \
   --pre-process-cmd 'sh -c "echo ready > /tmp/health"'
 ```
 
-If you need pipes, redirects, shell expansion, or compound shell syntax, wrap the command with `sh -c` or `bash -c`.
+### Bash or a command alongside services
 
-### 2. Run a command alongside services
-
-Use:
+`--bash` starts an interactive Bash session alongside the services:
 
 ```bash
-docker run --rm my-image --bash
+docker run --rm -it my-image --bash
 ```
 
-This starts Bash in parallel with running service processes.
+When Bash exits (including with Ctrl+D), or when the custom command exits whatever its exit status, the
+process step ends and the services are stopped. Finish scripts then run, unless skipped.
 
-If no service process is run:
+With `--skip-process --bash` or `--step ... --bash`, Bash replaces the `process.sh` scripts only:
+startup and finish scripts still run, and a failing startup script exits before Bash starts. See
+[Container Debugging](production-and-integration.md#container-debugging) for shell recipes.
 
-- arguments after the flags are run as a command
-- `--bash` can still be used to run Bash alongside that command
+## Restarting Processes
 
-This is mainly useful for debugging and container inspection.
-
-## Running Multi-Process Images in Separate Containers
-
-The same image can be used either as:
-
-- one multi-process container
-- several single-purpose containers
-
-Use `container services link` during build to define the default linked services. At runtime, narrow the selection with `--exec` or remove services with `--skip`.
-
-Examples:
-
-```bash
-docker run --rm my-image
-```
-
-Runs all linked services.
-
-```bash
-docker run --rm my-image --exec nginx
-```
-
-Runs only the `nginx` service lifecycle.
-
-```bash
-docker run --rm my-image --exec php-fpm
-```
-
-Runs only the `php-fpm` service lifecycle.
-
-This pattern is useful when:
-
-- you want one build artifact but different deployment topologies
-- you want to split a multi-process development image into separate production containers
-- you want to debug one service without starting the others
-
-Keep in mind:
-
-- startup and finish scripts still run for the services being run only
-- process arguments are shared across all running services
-- restart behavior changes with the number of running process scripts
-
-By default:
-
-- single running process: restart is disabled
-- multiple running processes: restart is enabled
+| Running `process.sh` scripts | Default |
+| --- | --- |
+| one | not restarted: the container exits with the process |
+| several | restarted |
 
 Override this with `--restart=true` or `--restart=false`.
 
-When restart is enabled, a failed process is retried with an exponential backoff
-delay, starting at 100 milliseconds and capped at 5 seconds. The delay resets
-after an execution lasting at least 30 seconds. Use `--no-restart-delay` to
-disable this delay and retry immediately:
-
-```bash
-docker run --rm my-image --restart=true --no-restart-delay
-```
-
-`--no-restart-delay` does not enable restarting on its own and does not change
-the wait for intentionally stopped processes. Immediate retries can consume
-significant CPU if a process keeps failing repeatedly.
+When restart is enabled, a process is restarted after any exit, clean or failed, with an exponential
+backoff: from 100 milliseconds up to 5 seconds, reset after a run of at least 30 seconds.
+`--no-restart-delay` restarts immediately; it does not enable restarting on its own, and a process that
+keeps failing then uses a lot of CPU.
 
 Before a process is restarted:
 
 - the reason it ended is logged: a warning with its exit status or signal, or an info line after a clean exit
-- the children left in its process group are stopped with its stop signal, then killed with `SIGKILL` after `--kill-all-timeout`, so old workers cannot keep ports or files used by the new process
+- the children left in its process group are stopped with its stop signal, then killed with `SIGKILL`
+  after `--kill-all-timeout`, so old workers cannot keep the ports or files used by the new process
+
+A service stopped with [`container processes stop`](container-command/runtime/processes.md) stays
+stopped until `container processes start`, even with `--restart=false`, as long as its supervisor runs.
 
 ## Signals
 
-The entrypoint handles signals as follows:
+- `SIGINT`, `SIGTERM` and `SIGQUIT` stop the container: during the process step, services are stopped
+  and finish scripts still run.
+- Stopping a service sends its stop signal (`SIGTERM`, or its [`.stop-signal`](how-it-works.md#stop-signal))
+  to its whole process group, then `SIGKILL` after `--kill-all-timeout`. With `--kill-all-timeout 0`,
+  `SIGKILL` is sent immediately.
+- Other signals (`SIGHUP`, `SIGUSR1`, `SIGUSR2`, `SIGWINCH`...) are forwarded to the main process of each
+  service and of the custom command, which handles its children: `docker kill -s HUP` reloads nginx,
+  php-fpm or keepalived.
+- `SIGHUP` is not forwarded during the startup and finish steps.
+- `container watch` ignores `SIGHUP`, so a forwarded reload signal does not stop a watching service.
 
-- `SIGINT`, `SIGTERM` and `SIGQUIT` stop the container: during the process step, services are stopped and finish scripts still run
-- stopping a service sends its stop signal (`SIGTERM`, or the signal set in its `.stop-signal` file) to its whole process group, then `SIGKILL` after `--kill-all-timeout`
-- other signals (`SIGHUP`, `SIGUSR1`, `SIGUSR2`, `SIGWINCH`...) are forwarded to the main process of each service and of the custom command, which handles its children: `docker kill -s HUP` reloads nginx, php-fpm or keepalived
-- `container watch` ignores `SIGHUP`, so a forwarded reload signal does not restart a watching service
-
-`docker stop` kills the container after 10 seconds by default, while `--kill-all-timeout` is `15s`. For a graceful shutdown that may take longer, raise `docker stop --time`, Compose `stop_grace_period` or Kubernetes `terminationGracePeriodSeconds`.
+`docker stop` kills the container after 10 seconds by default, while `--kill-all-timeout` is `15s`. For
+a graceful shutdown that may take longer, raise `docker stop --time`, Compose `stop_grace_period` or
+Kubernetes `terminationGracePeriodSeconds`.

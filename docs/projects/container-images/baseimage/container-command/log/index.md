@@ -6,9 +6,6 @@ Logging utilities
 Usage:
   container log [command]
 
-Aliases:
-  log
-
 Print Commands:
   fatal       Fatal
   error       Error

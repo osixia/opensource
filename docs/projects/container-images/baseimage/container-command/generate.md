@@ -22,6 +22,7 @@ Use "container generate [command] --help" for more information about a command.
 ```
 
 ## bootstrap
+
 ```
 Generate bootstrap
 
@@ -32,21 +33,22 @@ Aliases:
   bootstrap, boot
 
 Flags:
-  -m, --multi-process       generate multi-process example
-                            
-  -i, --image string        image name (default "osixia/baseimage-example:latest")
-  -f, --from-image string   overwrite from image
-                            
-  -p, --priority int        services priority (default 500)
-  -t, --tags strings        services tags
-      --optional            optional service
-                            
-      --print               print generated files content
-                            
-  -l, --log-level string    set log level, choices: error, warning, info, debug, trace (default "info")
-      --quiet               show errors only
-  -o, --log-format string   set log format, choices: console, json (default "console")
-  -h, --help                help for bootstrap
+  -m, --multi-process        generate multi-process example
+
+  -i, --image string         image name (default "osixia/baseimage-example:latest")
+  -f, --from-image string    overwrite from image
+
+  -p, --priority int         services priority (default 500)
+      --stop-signal string   services stop signal (e.g. SIGQUIT); default SIGTERM without a stop signal file
+  -t, --tags strings         services tags
+      --optional             optional service
+
+      --print                print generated files content
+
+  -l, --log-level string     set log level, choices: error, warning, info, debug, trace (default "info")
+      --quiet                show errors only
+  -o, --log-format string    set log format, choices: console, json (default "console")
+  -h, --help                 help for bootstrap
 ```
 
 ## dockerfile
@@ -104,14 +106,32 @@ Aliases:
   services, svcs
 
 Flags:
-  -p, --priority int        services priority (default 500)
-  -t, --tags strings        services tags
-      --optional            optional service
-                            
-      --print               print generated files content
-                            
-  -l, --log-level string    set log level, choices: error, warning, info, debug, trace (default "info")
-      --quiet               show errors only
-  -o, --log-format string   set log format, choices: console, json (default "console")
-  -h, --help                help for services
+  -p, --priority int         services priority (default 500)
+      --stop-signal string   services stop signal (e.g. SIGQUIT); default SIGTERM without a stop signal file
+  -t, --tags strings         services tags
+      --optional             optional service
+
+      --print                print generated files content
+
+  -l, --log-level string     set log level, choices: error, warning, info, debug, trace (default "info")
+      --quiet                show errors only
+  -o, --log-format string    set log format, choices: console, json (default "console")
+  -h, --help                 help for services
 ```
+
+## Service Stop Signal
+
+Both `bootstrap` and `services` accept `--stop-signal`:
+
+```bash
+container generate bootstrap --stop-signal SIGQUIT
+container generate services nginx php-fpm --stop-signal SIGQUIT
+```
+
+These commands write a `.stop-signal` file for each generated service.
+Signal names are case-insensitive and the `SIG` prefix is optional. An
+unknown signal causes the command to fail.
+
+Without `--stop-signal`, no `.stop-signal` file is generated and the runtime
+uses `SIGTERM`. See [service files](../how-it-works.md#stop-signal) for the
+shutdown timeout and process-group behavior.

@@ -27,3 +27,6 @@ Includes non-root container images and supports read-only container environments
 - New to `osixia/baseimage`? Start with the [Quickstart](quickstart.md) to build a first image.
 - Want to understand the service model? Read [How It Works](how-it-works.md).
 - Prefer concrete examples? Go straight to [Tutorials](tutorials/index.md).
+- Going to production? Read [Production and Integration](production-and-integration.md) for non-root,
+  read-only, health checks and Kubernetes.
+- Comparing with tini, s6-overlay or supervisord? See [Positioning and Trade-offs](positioning-and-trade-offs.md).

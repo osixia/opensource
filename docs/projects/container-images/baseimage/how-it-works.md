@@ -1,6 +1,6 @@
 # 🧩 How It Works
 
-Quick overview of project files:
+An image based on `osixia/baseimage` is built from three parts:
 
 ```
 osixia-baseimage-example
@@ -15,11 +15,15 @@ osixia-baseimage-example
         └── startup.sh
 ```
 
+- the `Dockerfile` installs packages and prepares the services at build time
+- `services/` holds one directory per service, with its lifecycle scripts
+- `environment/` holds the default environment variables
+
 ## Dockerfile
 
-A typical `Dockerfile` extending `osixia/baseimage` usually looks like this:
+A typical `Dockerfile` extending `osixia/baseimage` looks like this:
 
-```
+```Dockerfile
 FROM osixia/baseimage
 
 ARG IMAGE="osixia/baseimage-example:latest"
@@ -41,116 +45,94 @@ RUN container services install \
 COPY environment /container/environment
 ```
 
-Below is a line-by-line explanation
+Line by line:
 
-```
-FROM osixia/baseimage
-```
-Create a new build stage from osixia base image.
-
-```
-ARG IMAGE="osixia/multi-process-example"
-ENV CONTAINER_IMAGE=${IMAGE}
-```
-Define a build-time variable `IMAGE` and assign its value to the `CONTAINER_IMAGE` environment variable.
-This allows the `container` command to determine the image name, which can be useful for debugging purposes.
-
-To leverage this feature, build the image with the `--build-arg` option: `docker build -t example/my-image:develop --build-arg IMAGE=example/my-image:develop .`
-
-```
-# Download services required packages or resources
-# RUN container packages install --update --clean \
-#        [...]
-#     && curl -o resources.tar.gz https://[...].tar.gz \
-#     && tar -xzf resources.tar.gz \
-#     && rm resources.tar.gz
-```
-Uncomment and adapt this stage to download the image service resources required at build time.
-This can include anything that takes time to download and can be cached to speed up image rebuilds.
-
-The `container` command provided by `osixia/baseimage` offers a simple, distribution-agnostic command-line interface to install distribution packages.
-For example, to install cowsay: `container packages install --update --clean cowsay`
-
-This command updates the package index, installs cowsay, and cleans the index cache afterward.
-It works transparently across Debian, Ubuntu, and Alpine.
-
-```
-COPY services /container/services
-```
-Copy the `services` directory into the image at `/container/services`.
-
-If changes occur in this directory — for example in the `install.sh` script — only this stage will be re-executed.
-The resources downloaded in the previous stage will remain cached.
-
-This makes it easier to iterate quickly on service script development.
-
-```
-RUN container services install \
-    && container services link
-```
-This will execute all non-optional service `install.sh` scripts and link those services to the entrypoint.
-
-As a result, these services will run by default when the container starts.
-
-```
-COPY environment /container/environment
-```
-Finally, copy the `environment` directory, which defines the default environment variables, into the image at `/container/environment`.
+- `ARG IMAGE` / `ENV CONTAINER_IMAGE`: the image name is shown in the container logs, which helps
+  debugging. Set it at build time:
+  `docker build -t example/my-image:develop --build-arg IMAGE=example/my-image:develop .`
+- The commented `RUN` installs packages and downloads resources. Keep slow downloads here: this layer
+  stays cached while you iterate on service scripts. `container packages install --update --clean cowsay`
+  updates the package index, installs the package and cleans the cache, the same way on Debian, Ubuntu
+  and Alpine.
+- `COPY services`: copies the services into `/container/services`. Changing a script only re-runs the
+  following layers.
+- `container services install && container services link`: runs the `install.sh` script of every
+  non-optional service, then links these services to the entrypoint so they run when the container
+  starts.
+- `COPY environment`: copied last, so changing a default value does not invalidate the installation
+  layers.
 
 ## Service Files
 
-This section describes all files used by the container command within a service directory. Additional files may also be included without impacting the service behavior.
+Every file is optional. Other files can be added to a service directory without changing its behavior.
 
-The files outlined below are not mandatory.
+| File | Role |
+| --- | --- |
+| `download.sh` | build time: downloads the service resources |
+| `install.sh` | build time: installs the service |
+| `startup.sh` | container start: prepares the service from the runtime environment |
+| `process.sh` | process step: the long-running command |
+| `finish.sh` | finish step, after the process step has ended |
+| `.priority` | order of the download, install, startup and finish scripts |
+| `.stop-signal` | signal sent to stop `process.sh` |
+| `.optional` | service not prepared nor linked by default |
+| `.tags/` | tags used to select services and processes |
+
+### download.sh
+Downloads the resources a service needs. It runs at build time with `container services download`,
+which downloads all non-optional services when called with no argument.
+
+Prefer installing packages and downloading large resources directly in the `Dockerfile`, where Docker
+caches them. `download.sh` is mostly useful for [optional services](#optional) shipped by a base image.
 
 ### install.sh
-This script should exclusively contain instructions for the initial setup of the service.
+Contains the initial setup of the service. It runs during the build, so runtime environment variables
+cannot customize it: use `startup.sh` for that.
 
-For improved image construction, all package installations or file downloads should occur within the `Dockerfile`.
-
-By separating time-intensive download operations from the setup, the docker build cache is utilized effectively.
-Changes to the `install.sh` file will not necessitate re-downloading dependencies,
-as the `Dockerfile` builder will only execute the service installation script.
-
-Note: The `install.sh` script executes during the docker build, thus runtime environment variables cannot be used for setup customization.
-Such customizations are handled in the `startup.sh` file.
+Keep package installations and downloads out of `install.sh` when possible: changing it then does not
+download the dependencies again.
 
 ### startup.sh
-This script prepares `process.sh` for execution and tailors the service setup to runtime environment variables.
+Prepares `process.sh` and adapts the service setup to runtime environment variables.
 
 ### process.sh
-This script specifies the command to be executed.
+Starts the long-running command of the service.
 
-For multi-process images, all `process.sh` scripts are launched simultaneously.
-The order defined in the service `.priority` file is irrelevant.
+In a multi-process image, all `process.sh` scripts start at the same time: `.priority` does not
+order them.
 
-Start the long-running command with `exec`: signals such as `SIGHUP` are forwarded to the `process.sh` main process only,
-and a shell that does not `exec` its command would not pass them on.
+Start the command with `exec`: signals such as `SIGHUP` are forwarded to the `process.sh` main process
+only, and a shell that does not `exec` its command would not pass them on.
 
 ### finish.sh
-This script is executed once `process.sh` has concluded.
+Runs during the finish step, after the process step has ended. In a multi-process container, it does not
+run each time an individual process exits or restarts.
 
 ### .priority
-The `.priority` file establishes the sequence in which services `install.sh`, `startup.sh` or `finish.sh` scripts are invoked.
-The smaller the number, the greater the priority. The default is `500`.
+Sets the order of the `download.sh`, `install.sh`, `startup.sh` and `finish.sh` scripts, which run one
+after the other. The smaller the number, the earlier the script runs; services with the same priority
+are sorted by name. The default is `500`.
 
 ### .stop-signal
-The `.stop-signal` file sets the signal sent to stop `process.sh`, for example `SIGQUIT` for a graceful nginx or php-fpm shutdown.
-The default is `SIGTERM`. If the process is still running after `--kill-all-timeout`, it is killed with `SIGKILL`.
+Sets the signal sent to stop `process.sh`, for example `SIGQUIT` for a graceful nginx or php-fpm
+shutdown. The default is `SIGTERM`.
 
-### Optional Service Files
+The stop signal is sent to the whole process group; remaining processes are killed with `SIGKILL` after
+`--kill-all-timeout`. With `--kill-all-timeout 0`, shutdown uses `SIGKILL` immediately.
 
-#### .optional
-This file indicates that the service is optional and is not installed by `container services install` by default.
-It can be incorporated later via the `container services require service-name` command.
+Signal names are case-insensitive and the `SIG` prefix is optional: `SIGQUIT`, `QUIT` and `quit` are the
+same. An unknown name produces a warning and falls back to `SIGTERM`.
 
-#### download.sh
-This script is called during container build to download optional service resources.
+`container generate bootstrap --stop-signal SIGQUIT` and
+`container generate services --stop-signal SIGQUIT` generate this file.
 
-Example of a `Dockerfile` using an optional service from a base image:
+### .optional
+Marks an optional service: by default, `container services download` and `link` skip it, and
+`container services install` only installs it once downloaded. A derived image enables it with
+`container services require`:
 
-```
-FROM [...]
+```Dockerfile
+FROM my-base-image
 
 # Require and download optional services
 RUN container services require service-name \
@@ -161,35 +143,44 @@ RUN container services install \
     && container services link
 ```
 
-### Service Tags
+### .tags
+A service directory may contain a `.tags` directory: each file in it defines a tag named after the file.
+Services and processes commands accept `tag:name` to select every service with this tag:
 
-A service directory may contain a `.tags` sub-directory.
-Each file in this directory defines a tag, where the filename is used as the tag name.
+```bash
+container services status tag:web
+container processes stop tag:web
+```
 
-Services and their related processes can then be filtered by tag through the services and processes subcommands.
+### Markers Written by the Container Command
 
-To learn more about tag usage, run `container services status --help`
+- `.downloaded` records a completed `download.sh`
+- `.installed` records a completed `install.sh`
+- `.entrypoint` selects the service for the entrypoint: `container services link` creates it and
+  `container services unlink` removes it (it is not a symbolic link)
+
+Prepare downloads and installations during the image build. At startup, the entrypoint still runs the
+missing downloads and installations of the selected services, before loading environment files. These
+operations need the Unix permissions of their scripts and marker files.
 
 ## Environment Files
 
-`.env` files in the `environment` directory and any sub-directories are loaded before executing services lifecycle scripts (`startup.sh`, `process.sh`, and `finish.sh`) or entrypoint lifecycle pre-commands.
-The variables they contain are defined as environment variables in the container.
+Files whose names start with `.env` in `/container/environment` and its sub-directories are loaded
+before the lifecycle pre-commands and the service scripts. Their variables are set in the container
+environment.
 
-Files are loaded in alphabetical order, and variables are overwritten if they were already defined in a previous file.
+- Files are read in alphabetical order of their paths; a variable defined again in a later file
+  overrides the previous value.
+- **Variables already present in the container environment, including those provided with
+  `docker run -e`, always win.** They are kept exactly as received, including empty values, quotes,
+  newlines and `$` characters.
+- `--skip-env-files` disables loading.
 
-**Container environment variables set at runtime override values defined in `.env` files.**
+### Variable Interpolation
 
-### Precedence and variable interpolation
-
-Variables already present in the container environment, including those provided
-with `docker run -e`, take precedence over environment files. Their values are
-preserved exactly, including empty values, quotes, newlines, and `$` characters.
-
-Within environment files, `$VAR` and `${VAR}` references are expanded using
-gotenv. Existing container environment variables can be used to resolve these
-references. File override order and interpolation follow the gotenv parser's rules.
-
-To keep a reference literal, use single quotes or escape the dollar sign:
+`$VAR` and `${VAR}` references in environment files are expanded by the
+[gotenv](https://github.com/subosito/gotenv) parser, and can use variables already present in the
+container environment. To keep a reference literal, use single quotes or escape the dollar sign:
 
 ```dotenv
 DOMAIN=example.org
@@ -198,10 +189,8 @@ LITERAL='${DOMAIN}'              # ${DOMAIN}
 TEMPLATE="https://\${DOMAIN}"     # https://${DOMAIN}
 ```
 
-Values already present in the environment are not expanded again when
-environment files are loaded. To expand a template explicitly, use
-`container envsubst`.
+Values already present in the environment are not expanded again. To render a template explicitly,
+use [`container envsubst`](container-command/environment/envsubst.md).
 
-Your shell or Docker Compose may perform interpolation before passing a value
-to the container. The preservation rule applies to the value received by the
-container.
+Your shell or Docker Compose may interpolate a value before passing it to the container: the rules
+above apply to the value the container receives.

@@ -15,11 +15,13 @@ It demonstrates:
 tutorials/nginx
 ├── Dockerfile
 ├── environment
+│   └── .env
 └── services
     └── nginx
         ├── install.sh
         ├── process.sh
-        └── startup.sh
+        ├── startup.sh
+        └── .stop-signal
 ```
 
 These files are available in the [`container-baseimage` repository](https://github.com/osixia/container-baseimage/tree/main/docs/tutorials/nginx).
@@ -108,17 +110,14 @@ You should see the generated `Hi!` page with the message from `.env` appended on
 
 ## Useful Variants
 
-Run with debug tools and Bash:
+Run Bash alongside Nginx, with debug logs:
 
 ```bash
 docker run --rm -it -p 8080:80 osixia/nginx-example --bash --log-level debug
 ```
 
-To install common debugging tools inside an image based on `osixia/baseimage`, use:
-
-```bash
-container packages install --debug-tools --update
-```
+Then install common debugging tools from that shell with
+`container packages install --debug-tools --update`.
 
 Run only the process step:
 
@@ -126,4 +125,4 @@ Run only the process step:
 docker run --rm -p 8080:80 osixia/nginx-example --step process
 ```
 
-The second command skips `startup.sh`, so the custom message from `.env` is not appended.
+This skips `startup.sh`, so the custom message from `.env` is not appended.

@@ -124,8 +124,13 @@ Usage:
   container services status [service|tag:name]... [flags]
 
 Flags:
+      --json                print status as JSON
+
   -l, --log-level string    set log level, choices: error, warning, info, debug, trace (default "info")
       --quiet               show errors only
   -o, --log-format string   set log format, choices: console, json (default "console")
   -h, --help                help for status
 ```
+
+`--json` prints a JSON array with the `name`, `priority`, `optional`, `downloaded`, `installed`,
+`linked` and `tags` of each service.

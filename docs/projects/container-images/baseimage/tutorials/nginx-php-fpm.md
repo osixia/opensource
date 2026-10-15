@@ -33,9 +33,11 @@ tutorials/nginx-php-fpm/
 └── services
     └── php-fpm
         ├── config
-        │   └── default
+        │   ├── default
+        │   └── global.conf
         ├── install.sh
-        └── process.sh
+        ├── process.sh
+        └── .stop-signal
 ```
 
 These files are available in the [`container-baseimage` repository](https://github.com/osixia/container-baseimage/tree/main/docs/tutorials/nginx-php-fpm).
@@ -58,6 +60,7 @@ Executed at build time. It:
 - disables `expose_php`
 - sets `cgi.fix_pathinfo=0`
 - configures PHP-FPM to listen on `/run/container/php-fpm.sock`
+- copies `config/global.conf` into the PHP-FPM `pool.d` directory
 - configures the socket owner and group as `www-data`
 - replaces the default Nginx site with the provided PHP-enabled vhost
 - creates `/var/www/html/phpinfo.php`
@@ -89,16 +92,16 @@ PHP-FPM also has its own [`process_control_timeout`](https://www.php.net/manual/
 which defaults to `0`. With that default, PHP-FPM can immediately escalate to
 `SIGTERM` and interrupt running requests despite receiving `SIGQUIT`.
 
-To allow requests time to finish, configure a nonzero timeout in the `[global]`
-section of `/etc/php/<version>/fpm/php-fpm.conf` during the image build, for example:
+The tutorial sets it to `15s` in `services/php-fpm/config/global.conf`. PHP-FPM
+loads every file of its `pool.d` directory, and a `[global]` section is accepted there:
 
 ```ini
 [global]
 process_control_timeout = 15s
 ```
 
-Coordinate this value with `container --kill-all-timeout` (also `15s` by default).
-Both limits apply: whichever expires first can interrupt unfinished requests.
+Keep it within `container --kill-all-timeout` (also `15s` by default): whichever
+expires first can interrupt unfinished requests.
 
 ### `docker-compose.yml`
 
@@ -107,6 +110,13 @@ This example runs the same multi-process image as two single-purpose containers:
 - `nginx` runs with `--exec nginx`
 - `php-fpm` runs with `--exec php-fpm`
 - both containers mount the same `tmpfs` volume on `/run/container`
+
+Both containers also share process control state. Each supervisor cleans
+only its selected service at startup, so restarting Nginx preserves the
+PHP-FPM state and vice versa. Commands such as `container processes status`
+can see both services. Use `container processes check nginx` in the Nginx
+container and `container processes check php-fpm` in the PHP-FPM container
+to check each container independently.
 
 This keeps the original Unix socket wiring intact across two containers:
 
@@ -216,16 +226,10 @@ Run only PHP-FPM:
 docker run --rm osixia/nginx-php-fpm-example --exec php-fpm
 ```
 
-Debug both services with Bash:
+Run Bash alongside both services, with debug logs:
 
 ```bash
 docker run --rm -it -p 8080:80 osixia/nginx-php-fpm-example --bash --log-level debug
-```
-
-To install common debugging tools inside an image based on `osixia/baseimage`, use:
-
-```bash
-container packages install --debug-tools --update
 ```
 
 ## Notes

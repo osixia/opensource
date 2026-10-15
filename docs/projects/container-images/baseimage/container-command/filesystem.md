@@ -17,6 +17,21 @@ Flags:
 Use "container groups [command] --help" for more information about a command.
 ```
 
+### add
+
+```
+Add group
+
+Usage:
+  container groups add id name [flags]
+
+Flags:
+  -l, --log-level string    set log level, choices: error, warning, info, debug, trace (default "info")
+      --quiet               show errors only
+  -o, --log-format string   set log format, choices: console, json (default "console")
+  -h, --help                help for add
+```
+
 ## users
 
 ```
@@ -34,7 +49,30 @@ Flags:
 Use "container users [command] --help" for more information about a command.
 ```
 
+### add
+
+```
+Add user
+
+Usage:
+  container users add id name --group-id group_id --group-name group_name [flags]
+
+Flags:
+  -i, --group-id string     group id
+  -n, --group-name string   group name
+
+  -l, --log-level string    set log level, choices: error, warning, info, debug, trace (default "info")
+      --quiet               show errors only
+  -o, --log-format string   set log format, choices: console, json (default "console")
+  -h, --help                help for add
+```
+
 ## watch
+
+`container watch` runs scripts when files change, for example to reload a service when its
+configuration is updated. It ignores `SIGHUP`, so a reload signal forwarded by the entrypoint does not
+stop it.
+
 
 ```
 Watch files
