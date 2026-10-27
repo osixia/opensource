@@ -4,7 +4,7 @@ The image ships with the full suite of OpenLDAP utilities and with `openldap-ctl
 
 ``` bash
 docker exec openldap container run -- <command>   # inside a running container
-docker run --rm osixia/openldap run -- <command>  # in a throwaway container
+docker run --rm osixia/openldap:2.6.15-rc run -- <command>  # in a throwaway container
 ```
 
 `container run --` loads the image environment variables before running the command.
@@ -43,7 +43,7 @@ docker exec openldap container run -- slapcat -n 0
 Search for all entries under a base DN:
 
 ``` bash
-docker run --rm osixia/openldap run -- \
+docker run --rm osixia/openldap:2.6.15-rc run -- \
   ldapsearch -H ldap://172.16.0.1 \
   -D "cn=admin,dc=example,dc=org" -w passw0rd \
   -b "dc=example,dc=org" "(objectClass=*)"
@@ -52,7 +52,7 @@ docker run --rm osixia/openldap run -- \
 Verify bind credentials:
 
 ``` bash
-docker run --rm osixia/openldap run -- \
+docker run --rm osixia/openldap:2.6.15-rc run -- \
   ldapwhoami -H ldap://172.16.0.1 \
   -D "cn=admin,dc=example,dc=org" -w passw0rd
 ```
@@ -61,7 +61,7 @@ Add entries from a local LDIF file:
 
 ``` bash
 docker run --rm -v /path/to/entries.ldif:/tmp/entries.ldif \
-  osixia/openldap run -- \
+  osixia/openldap:2.6.15-rc run -- \
   ldapadd -H ldap://172.16.0.1 \
   -D "cn=admin,dc=example,dc=org" -w passw0rd \
   -f /tmp/entries.ldif
@@ -70,7 +70,7 @@ docker run --rm -v /path/to/entries.ldif:/tmp/entries.ldif \
 Change a user's password:
 
 ``` bash
-docker run --rm osixia/openldap run -- \
+docker run --rm osixia/openldap:2.6.15-rc run -- \
   ldappasswd -H ldap://172.16.0.1 \
   -D "cn=admin,dc=example,dc=org" -w passw0rd \
   -s newpassword "uid=jdoe,ou=people,dc=example,dc=org"
@@ -95,7 +95,7 @@ docker exec -i openldap container run -- \
 ## openldap-ctl
 
 ``` bash
-docker run --rm osixia/openldap run -- openldap-ctl --help
+docker run --rm osixia/openldap:2.6.15-rc run -- openldap-ctl --help
 ```
 
 | Command       | Description                                                            |
@@ -112,13 +112,13 @@ docker run --rm osixia/openldap run -- openldap-ctl --help
 Generate a random password:
 
 ``` bash
-docker run --rm osixia/openldap run -- openldap-ctl password generate
+docker run --rm osixia/openldap:2.6.15-rc run -- openldap-ctl password generate
 ```
 
 Hash a password:
 
 ``` bash
-docker run --rm osixia/openldap run -- openldap-ctl password hash 'passw0rd'
+docker run --rm osixia/openldap:2.6.15-rc run -- openldap-ctl password hash 'passw0rd'
 ```
 
 The result is an Argon2 hash, ready to be used in a `*_PASSWORD_HASHED` bootstrap variable or in a `userPassword` attribute:
@@ -137,7 +137,7 @@ OpenLDAP loads schemas in `cn=config` LDIF format. `schema2ldif` converts a trad
 
 ``` bash
 docker run --rm --user $UID -v $(pwd)/schema:/data \
-  osixia/openldap run -- openldap-ctl schema2ldif /data/test.schema
+  osixia/openldap:2.6.15-rc run -- openldap-ctl schema2ldif /data/test.schema
 ```
 
 The LDIF file is written next to the source file, here `schema/test.ldif`, and printed. The command fails if the LDIF file already exists.

@@ -15,7 +15,7 @@ Add the schema file names to the list, after the schemas they depend on:
 ``` bash
 docker run --name openldap \
   -e OPENLDAP_BOOTSTRAP_SCHEMAS="core.ldif cosine.ldif inetorgperson.ldif rfc2307bis.ldif openssh-lpk.ldif sudo.ldif" \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 !!! warning
@@ -54,7 +54,7 @@ Custom schemas are read from `/container/services/openldap/assets/schema` and co
 
 ``` bash
 docker run --rm --user $UID -v $(pwd)/schema:/data \
-  osixia/openldap run -- openldap-ctl schema2ldif /data/my-app.schema
+  osixia/openldap:2.6.15-rc run -- openldap-ctl schema2ldif /data/my-app.schema
 ```
 
 This writes `my-app.ldif` next to the source file. See [LDAP Toolkit](../ldap-toolkit.md#convert-schema-to-ldif).
@@ -65,7 +65,7 @@ This writes `my-app.ldif` next to the source file. See [LDAP Toolkit](../ldap-to
 docker run --name openldap \
   -v $(pwd)/schema/my-app.ldif:/container/services/openldap/assets/schema/my-app.ldif \
   -e OPENLDAP_BOOTSTRAP_SCHEMAS="core.ldif cosine.ldif inetorgperson.ldif rfc2307bis.ldif my-app.ldif" \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 To add a schema to an existing directory, load the LDIF file with `ldapadd` bound as the configuration root DN.

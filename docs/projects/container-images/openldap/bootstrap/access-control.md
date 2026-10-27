@@ -46,7 +46,7 @@ Set `OPENLDAP_BOOTSTRAP_DATA_READONLY=true` to create an account that can read t
 ``` bash
 docker run --name openldap \
   -e OPENLDAP_BOOTSTRAP_DATA_READONLY=true \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 | Variable                                           | Default                                    |
@@ -56,7 +56,7 @@ docker run --name openldap \
 
 ## Monitor Database
 
-The monitor database (`cn=Monitor`) is always created. `OPENLDAP_BOOTSTRAP_MONITOR_ENABLED` sets its `olcMonitoring` value.
+The monitor database (`cn=Monitor`) is always created. `OPENLDAP_BOOTSTRAP_MONITOR` sets its `olcMonitoring` value.
 
 Set `OPENLDAP_BOOTSTRAP_MONITOR_READONLY=true` to create an account that can read it, for example for a metrics exporter:
 

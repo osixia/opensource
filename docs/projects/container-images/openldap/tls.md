@@ -16,7 +16,7 @@ The simplest way is to mount a directory that contains files with exactly those 
 docker run --name openldap --hostname ldap.example.org -p 389:3890 -p 636:6360 \
   -e OPENLDAP_BOOTSTRAP_TLS=true \
   -v $PWD/certs:/container/services/openldap/assets/certs \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 The files must be readable by the `ldap` user (uid `911`).
@@ -52,7 +52,7 @@ docker run --name openldap --hostname ldap.example.org -p 389:3890 -p 636:6360 \
   -e OPENLDAP_BOOTSTRAP_TLS=true \
   -e OPENLDAP_BOOTSTRAP_TLS_REQUIRED=true \
   -v $PWD/certs:/container/services/openldap/assets/certs \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 Bootstrap then requires a security strength of at least 128 bits for every operation (`olcSecurity: ssf=128`). The local `ldapi:///` socket is treated as secure, so administration from inside the container keeps working.

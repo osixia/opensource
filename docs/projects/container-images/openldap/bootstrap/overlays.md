@@ -10,7 +10,7 @@ docker run --name openldap \
   -e OPENLDAP_BOOTSTRAP_REFINT=true \
   -e OPENLDAP_BOOTSTRAP_UNIQUE=true \
   -e OPENLDAP_BOOTSTRAP_MEMBEROF=true \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 ## Password Policy

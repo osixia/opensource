@@ -30,7 +30,7 @@ Set `OPENLDAP_BOOTSTRAP_REPLICATION=true` to bootstrap multi-provider replicatio
       -e OPENLDAP_BOOTSTRAP_REPLICATION=true \
       -e OPENLDAP_BOOTSTRAP_REPLICATION_HOSTS="ldap://ldap1.example.org:3890 ldap://ldap2.example.org:3890" \
       -e OPENLDAP_BOOTSTRAP_REPLICATION_DATA_READONLY_PASSWORD="passw0rd" \
-      osixia/openldap
+      osixia/openldap:2.6.15-rc
     ```
 
     Second server, `ldap2.example.org`:
@@ -43,7 +43,7 @@ Set `OPENLDAP_BOOTSTRAP_REPLICATION=true` to bootstrap multi-provider replicatio
       -e OPENLDAP_BOOTSTRAP_REPLICATION=true \
       -e OPENLDAP_BOOTSTRAP_REPLICATION_HOSTS="ldap://ldap1.example.org:3890 ldap://ldap2.example.org:3890" \
       -e OPENLDAP_BOOTSTRAP_REPLICATION_DATA_READONLY_PASSWORD="passw0rd" \
-      osixia/openldap
+      osixia/openldap:2.6.15-rc
     ```
 
 === "Docker Compose"
@@ -51,7 +51,7 @@ Set `OPENLDAP_BOOTSTRAP_REPLICATION=true` to bootstrap multi-provider replicatio
     ``` yaml
     services:
       ldap1:
-        image: osixia/openldap
+        image: osixia/openldap:2.6.15-rc
         container_name: ldap1
         hostname: ldap1.example.org
         networks:
@@ -72,7 +72,7 @@ Set `OPENLDAP_BOOTSTRAP_REPLICATION=true` to bootstrap multi-provider replicatio
           - ldap1-backups:/var/lib/openldap/openldap-backups
 
       ldap2:
-        image: osixia/openldap
+        image: osixia/openldap:2.6.15-rc
         container_name: ldap2
         hostname: ldap2.example.org
         networks:

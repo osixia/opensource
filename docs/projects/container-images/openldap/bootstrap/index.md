@@ -27,7 +27,7 @@ Passwords are hashed with Argon2 (`OPENLDAP_BOOTSTRAP_FRONTEND_PASSWORD_HASH`).
 docker run --name openldap \
   -e OPENLDAP_BOOTSTRAP_ORGANIZATION="Keycloakers Org" \
   -e OPENLDAP_BOOTSTRAP_SUFFIX="dc=keycloakers,dc=org" \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 `OPENLDAP_BOOTSTRAP_SUFFIX` must start with `dc=`, in lowercase. Bootstrap stops with an error for any other suffix, such as `o=acme`.
@@ -45,14 +45,14 @@ docker logs openldap 2>&1 | grep -i password
 To set a password yourself, hash it first and pass the hash:
 
 ``` bash
-docker run --rm osixia/openldap run -- openldap-ctl password hash 'my-secret-password'
+docker run --rm osixia/openldap:2.6.15-rc run -- openldap-ctl password hash 'my-secret-password'
 ```
 
 ``` bash
 docker run --name openldap \
   -e OPENLDAP_BOOTSTRAP_DATA_ROOT_PASSWORD_HASHED='{ARGON2}$argon2id$v=19$m=7168,t=5,p=1$...' \
   -e OPENLDAP_BOOTSTRAP_CONFIG_ROOT_PASSWORD_HASHED='{ARGON2}$argon2id$v=19$m=7168,t=5,p=1$...' \
-  osixia/openldap
+  osixia/openldap:2.6.15-rc
 ```
 
 !!! warning

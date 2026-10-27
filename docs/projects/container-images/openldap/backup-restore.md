@@ -81,7 +81,7 @@ docker run --name openldap-cron \
   -v openldap-conf:/etc/openldap/slapd.d \
   -v openldap-data:/var/lib/openldap/openldap-data \
   -v openldap-backups:/var/lib/openldap/openldap-backups \
-  osixia/openldap -x openldap-cron
+  osixia/openldap:2.6.15-rc -x openldap-cron
 ```
 
 The container must run as `root` for `crond`; the backup itself runs as the `ldap` user.

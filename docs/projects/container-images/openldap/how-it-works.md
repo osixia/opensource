@@ -12,7 +12,7 @@
 | `openldap-pre-upgrade` | no                 | Backs up the databases before an upgrade; meant to run as an init container            |
 | `openldap-cron`        | no                 | Runs scheduled backups; meant to run in a separate container                           |
 
-The two optional services are started explicitly with the baseimage `-x` (`--exec`) flag, for example `osixia/openldap -x openldap-cron`. See [Backup / Restore](backup-restore.md) and [Upgrade](upgrade.md).
+The two optional services are started explicitly with the baseimage `-x` (`--exec`) flag, for example `osixia/openldap:2.6.15-rc -x openldap-cron`. See [Backup / Restore](backup-restore.md) and [Upgrade](upgrade.md).
 
 ## Startup Sequence
 
