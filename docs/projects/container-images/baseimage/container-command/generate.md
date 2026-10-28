@@ -38,6 +38,7 @@ Flags:
   -f, --from-image string   overwrite from image
                             
   -p, --priority int        services priority (default 500)
+      --stop-signal string  services stop signal (e.g. SIGQUIT); default SIGTERM without a stop signal file
   -t, --tags strings        services tags
       --optional            optional service
                             
@@ -105,6 +106,7 @@ Aliases:
 
 Flags:
   -p, --priority int        services priority (default 500)
+      --stop-signal string  services stop signal (e.g. SIGQUIT); default SIGTERM without a stop signal file
   -t, --tags strings        services tags
       --optional            optional service
                             

@@ -102,10 +102,24 @@ docker run --rm osixia/openldap:2.6.15-rc run -- openldap-ctl --help
 | ------------- | ---------------------------------------------------------------------- |
 | `backup`      | Back up the configuration and data databases                           |
 | `restore`     | Restore a backup                                                       |
+| `validate-ldif` | Check data LDIF against the initialized configuration without importing it |
 | `password`    | Generate or hash a password                                            |
 | `schema2ldif` | Convert a `.schema` file to `cn=config` LDIF                           |
 
 `backup` and `restore` are described in [Backup / Restore](backup-restore.md).
+
+### Validate LDIF
+
+Check entries against the instance's schemas without importing them or stopping OpenLDAP. First copy the file into the running container:
+
+```bash
+docker cp users.ldif openldap:/tmp/users.ldif
+docker exec openldap container run -- openldap-ctl validate-ldif /tmp/users.ldif
+```
+
+You can pass several files or a directory. Directories are searched recursively for `*.ldif`, excluding hidden paths. Each file must contain complete data entries. The command checks syntax, attribute values and schemas, and returns a non-zero status if validation fails.
+
+It requires initialized OpenLDAP configuration. It does not check existing entries, ACLs or overlay rules, and does not accept `ldapmodify` change records.
 
 ### Password Helpers
 
@@ -128,6 +142,17 @@ The result is an Argon2 hash, ready to be used in a `*_PASSWORD_HASHED` bootstra
 ```
 
 Quote the password with single quotes so the shell does not interpret special characters.
+
+To read a password from a file or standard input:
+
+```bash
+docker run --rm --user "$UID" -v "$PWD/password.txt:/run/secrets/password:ro" \
+  osixia/openldap:2.6.15-rc run -- openldap-ctl password hash --file /run/secrets/password
+docker run --rm -i osixia/openldap:2.6.15-rc run -- \
+  openldap-ctl password hash --stdin < password.txt
+```
+
+The contents are hashed exactly, including trailing newlines. Use `hash -- password` for a literal password named `--file`, `--stdin` or `--`.
 
 Both commands can be changed with `OPENLDAP_CTL_PASSWORD_GENERATE_CMD` and `OPENLDAP_CTL_PASSWORD_HASH_CMD`.
 

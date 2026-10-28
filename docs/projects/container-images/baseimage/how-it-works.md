@@ -131,6 +131,16 @@ This script is executed once `process.sh` has concluded.
 The `.priority` file establishes the sequence in which services `install.sh`, `startup.sh` or `finish.sh` scripts are invoked.
 The smaller the number, the greater the priority. The default is `500`.
 
+### .stop-signal
+
+This file sets the signal used to stop the service process. The default is `SIGTERM`. For a graceful Nginx or PHP-FPM shutdown, put `SIGQUIT` in the file:
+
+```text
+SIGQUIT
+```
+
+You can generate it with `container generate services nginx --stop-signal SIGQUIT`. Keep the application's shutdown timeout within the entrypoint's `--kill-all-timeout` (default: `15s`) and give Docker or Kubernetes a longer termination grace period.
+
 ### Optional Service Files
 
 #### .optional

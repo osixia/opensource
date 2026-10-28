@@ -41,7 +41,7 @@ Example:
 ```Dockerfile
 FROM debian:trixie-slim
 
-ARG OSIXIA_BASEIMAGE_VERSION="2.0.0-beta"
+ARG OSIXIA_BASEIMAGE_VERSION="2.1.0"
 ARG OSIXIA_BASEIMAGE_ARCH="amd64"
 
 RUN apt-get update && apt-get install -y nginx xz-utils
@@ -80,7 +80,7 @@ Recommended pattern:
 ```Dockerfile
 FROM debian:trixie-slim
 
-ARG OSIXIA_BASEIMAGE_VERSION="2.0.0-beta"
+ARG OSIXIA_BASEIMAGE_VERSION="2.1.0"
 ARG OSIXIA_BASEIMAGE_ARCH="amd64"
 
 RUN apt-get update && apt-get install -y nginx xz-utils
@@ -135,6 +135,7 @@ Useful commands inside a running container:
 
 - `container services status`
 - `container processes status`
+- `container processes check <name>`: exits with code `1` if a selected process is unexpectedly down
 - `container processes stop <name>`
 - `container processes start <name>`
 - `container environment print`
@@ -169,7 +170,8 @@ Why it is needed for process management:
 - runtime state is stored in `/run/container`
 - process PID files and stop markers are created there, including the state used by `container processes`
 - the generator also writes there when used inside a container
-- the entrypoint ensures `/run/container`, `/run/container/processes`, and `/run/container/generator` exist and tries to set them to `0777`
+- the entrypoint creates `/run/container`, `/run/container/processes`, and `/run/container/generator` with mode `0777` when absent; existing directory permissions are preserved
+- `/run/container/tmp` provides a shared temporary directory, created with mode `1777` (sticky bit); scripts can use it with `mktemp`
 
 If your image or runtime flow does not rely on those runtime management features, you may not need `/run/container` to be writable. But process management and many baseimage features assume it is available.
 

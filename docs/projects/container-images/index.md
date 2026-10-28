@@ -6,13 +6,13 @@ hide:
 
 <div class="grid cards" markdown>
 
-[osixia/baseimage](baseimage/index.md)
+[Baseimage](baseimage/index.md)
 { .card }
 
-[osixia/keepalived](keepalived/index.md)
+[Keepalived](keepalived/index.md)
 { .card }
 
-[osixia/openldap](openldap/index.md)
+[OpenLDAP](openldap/index.md)
 { .card }
 
 </div>

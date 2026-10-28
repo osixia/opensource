@@ -17,6 +17,7 @@ tutorials/nginx
 ├── environment
 └── services
     └── nginx
+        ├── .stop-signal
         ├── install.sh
         ├── process.sh
         └── startup.sh
@@ -70,6 +71,10 @@ Executed as the managed process. It:
 - logs the container IP address
 - starts Nginx in the foreground with `daemon off;`
 - forwards any extra entrypoint arguments to Nginx
+
+### `services/nginx/.stop-signal`
+
+Contains `SIGQUIT`, so Nginx lets active requests finish during shutdown. The default signal without this file is `SIGTERM`.
 
 ## Build
 

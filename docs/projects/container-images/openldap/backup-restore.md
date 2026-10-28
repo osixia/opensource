@@ -18,26 +18,28 @@ Backups can be taken while OpenLDAP is running.
 Usage:
 
 ``` bash
-openldap-ctl backup file-prefix [--config] [--data] [--clean days]
+openldap-ctl backup file-prefix [--config] [--data] [--clean days] [--clean-prefix prefix]
 ```
 
 | Option         | Description                                                            |
 | -------------- | ---------------------------------------------------------------------- |
 | `--config`     | Back up only the configuration database                                |
 | `--data`       | Back up only the data database                                         |
-| `--clean days` | After the backup, delete files older than `days` days in the backup directory |
+| `--clean days` | After the backup, delete backup files older than `days` days |
+| `--clean-prefix prefix` | Limit cleanup to backup filenames starting with this prefix; requires `--clean` |
 
 Without `--config` or `--data`, both databases are backed up.
 
-Create only a data backup and remove files older than 15 days:
+Create a data backup and remove only `daily-` backups older than 15 days:
 
 ``` bash
-docker exec openldap container run -- openldap-ctl backup my-backup --data --clean 15
+docker exec openldap container run -- \
+  openldap-ctl backup "daily-$(date -I)" --data --clean 15 --clean-prefix daily-
 ```
 
 !!! warning
 
-    `--clean` deletes **every** file older than the given number of days in the backup directory, not only files with the same prefix.
+    Without `--clean-prefix`, cleanup applies to all old files ending in `-config.gz` or `-data.gz` in the backup directory, including manual and upgrade backups. A data-only backup can also clean configuration backups. Always set a prefix when you want to preserve other backup sets.
 
 ## Restore a Backup
 
@@ -55,15 +57,17 @@ openldap-ctl restore file-prefix [--config] [--data] [--force]
 | ---------- | ------------------------------------------------------------------------ |
 | `--config` | Restore only the configuration database                                  |
 | `--data`   | Restore only the data database                                           |
-| `--force`  | Stop OpenLDAP if it is running and delete existing data before restoring |
+| `--force`  | Stop OpenLDAP if running and replace the selected databases |
 
 A restore goes through these steps:
 
 1. The backup files are checked. If one is missing or is not a valid gzip archive, the command stops and **nothing is changed**.
 2. If OpenLDAP is running, it is stopped. This requires `--force`.
-3. Existing configuration and data are deleted. This requires `--force`.
+3. The selected databases are moved into `.restore-previous` directories. Replacing existing data requires `--force`.
 4. The selected databases are restored, and the data database is re-indexed.
-5. OpenLDAP is started again if it was running.
+5. On success, the previous data is removed. On failure, the command attempts to put it back. OpenLDAP is started again if it was running.
+
+If a restore is interrupted and leaves a `.restore-previous` directory, the next restore refuses to proceed. Inspect the files and recover the previous data before trying again.
 
 Without `--force`, the command refuses to run when OpenLDAP is running or when the target directories are not empty.
 
@@ -86,13 +90,13 @@ docker run --name openldap-cron \
 
 The container must run as `root` for `crond`; the backup itself runs as the `ldap` user.
 
-The schedule and command are defined by `OPENLDAP_CRON_JOB`. By default, a full backup runs every day at 02:15 and backups older than 15 days are deleted:
+The schedule and command are defined by `OPENLDAP_CRON_JOB`. By default, a full backup runs every day at 02:15 and only scheduled backups older than 15 days are deleted:
 
 ``` bash
-15 2 * * * PATH=${PATH} container run -- openldap-ctl backup "$(date -I)-${OPENLDAP_VERSION}-openldap-cron" --clean 15
+15 2 * * * PATH=${PATH} container run -- openldap-ctl backup "openldap-cron-$(date -I)-${OPENLDAP_VERSION}" --clean 15 --clean-prefix openldap-cron-
 ```
 
-This produces files such as `2026-10-13-2.6.15-r0-openldap-cron-config.gz`.
+This produces files such as `openldap-cron-2026-10-13-2.6.15-r0-config.gz` and preserves manual and upgrade backups.
 
 ## Keeping Backups Safe
 

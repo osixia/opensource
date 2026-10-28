@@ -1,4 +1,4 @@
-# osixia/openldap
+# OpenLDAP
 
 [docker hub]: https://hub.docker.com/r/osixia/openldap
 [github]: https://github.com/osixia/container-openldap
@@ -26,5 +26,6 @@
 - Preparing a first deployment? See [Bootstrap](bootstrap/index.md), then [TLS](tls.md) and [Replication](replication.md).
 - Running it in production? Read [Backup / Restore](backup-restore.md) and [Upgrade](upgrade.md).
 - Looking for a setting? All of them are listed in [Environment Variables](environment-variables.md).
+- Deploying on Kubernetes? Use the [OpenLDAP Helm chart](../../kubernetes/helm-charts/openldap.md), or try a complete [Authelia or Keycloak stack](../../kubernetes/helm-charts/examples.md).
 
 This image is based on [osixia/baseimage](../baseimage/index.md).

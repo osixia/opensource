@@ -48,7 +48,7 @@ The configuration file already exists, so it is not generated again. See [How It
 
 ### The configuration is not reloaded after an edit
 
-The file was replaced instead of written in place. See [Hot Reload](configuration.md#hot-reload).
+If you bind-mounted a single file, an editor may have replaced the host file while Docker still mounts the old one. Mount the containing directory or write the file in place. See [Hot Reload](configuration.md#hot-reload).
 
 ### `nopreempt will not work with initial state MASTER`
 

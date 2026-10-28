@@ -11,8 +11,9 @@
 | `openldap-upgrade`     | yes                | Records the OpenLDAP version and migrates the databases when the image version changes |
 | `openldap-pre-upgrade` | no                 | Backs up the databases before an upgrade; meant to run as an init container            |
 | `openldap-cron`        | no                 | Runs scheduled backups; meant to run in a separate container                           |
+| `openldap-tls-reload`  | no                 | Watches certificate files and restarts OpenLDAP when their contents change |
 
-The two optional services are started explicitly with the baseimage `-x` (`--exec`) flag, for example `osixia/openldap:2.6.15-rc -x openldap-cron`. See [Backup / Restore](backup-restore.md) and [Upgrade](upgrade.md).
+Optional services are started explicitly with the baseimage `-x` (`--exec`) flag, for example `osixia/openldap:2.6.15-rc -x openldap-cron`. See [Backup / Restore](backup-restore.md), [Upgrade](upgrade.md) and [TLS](tls.md#renewing-certificates).
 
 ## Startup Sequence
 

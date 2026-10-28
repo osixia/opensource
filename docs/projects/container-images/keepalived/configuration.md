@@ -129,15 +129,11 @@ docker logs keepalived
 # ... Reload complete
 ```
 
-!!! warning "Write the file in place"
+!!! note "Single-file bind mounts"
 
-    Changes are detected when the file is **written in place** (`cp new.conf keepalived.conf`, `cat > keepalived.conf`, `>>`). Tools that replace the file with a new one (`sed -i`, `mv`, some editors) are not detected, and later changes are missed until the container restarts.
+    When you bind-mount a single file, write it **in place** (`cat > keepalived.conf`, `>>`). If an editor replaces it with a new file, Docker keeps the original file mounted inside the container. A manual reload then still reads the old contents.
 
-    In that case, reload manually:
-
-    ``` bash
-    docker exec keepalived /container/services/keepalived-conf/assets/scripts/reload.sh
-    ```
+    For editors that save by replacement, mount the containing directory instead. For example, place `keepalived.conf` in `./keepalived/` and use `--volume ./keepalived:/etc/keepalived:ro`. The watcher then sees file replacements too.
 
 To run something else on change, set `KEEPALIVED_CONF_RELOAD_SCRIPT` to your own script.
 

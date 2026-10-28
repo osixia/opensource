@@ -2,7 +2,7 @@
 
 Four common OpenLDAP overlays can be enabled at bootstrap. Each one is disabled by default and is added to the data database when its variable is set to `true`.
 
-The required modules are already loaded by the default value of `OPENLDAP_BOOTSTRAP_MODULES`.
+The default `OPENLDAP_BOOTSTRAP_MODULES=auto` loads the modules needed for the enabled features. You can also supply an explicit ordered list.
 
 ``` bash
 docker run --name openldap \
@@ -27,6 +27,7 @@ The default policy is:
 | Setting                         | Default            | Variable suffix (`OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_…`) |
 | ------------------------------- | ------------------ | -------------------------------------------------------- |
 | Minimum length                  | 12 characters      | `MIN_LENGTH`                                             |
+| Check password quality          | when possible (`1`) | `CHECK_QUALITY` |
 | Password history                | 12 passwords       | `IN_HISTORY`                                             |
 | Maximum age                     | 90 days            | `MAX_AGE`                                                |
 | Expiration warning              | 14 days before     | `EXPIRE_WARNING`                                         |
@@ -34,6 +35,8 @@ The default policy is:
 | Lockout                         | after 5 failures   | `LOCKOUT`, `MAX_FAILURE`                                 |
 | Failure counter reset           | 5 minutes          | `FAILURE_COUNT_INTERVAL`                                 |
 | Lockout duration                | 15 minutes         | `LOCKOUT_DURATION`                                       |
+| Progressive lockout             | disabled (`0`)     | `MIN_DELAY`, `MAX_DELAY` |
+| Maximum inactivity              | disabled (`0`)     | `MAX_IDLE` |
 | Users can change their password | yes                | `ALLOW_USER_CHANGE`                                      |
 | Old password required to change | yes                | `SAFE_MODIFY`                                            |
 | Must change after admin reset   | no                 | `MUST_CHANGE`                                            |
@@ -42,6 +45,14 @@ Durations are set in seconds. Overlay-level settings are `OPENLDAP_BOOTSTRAP_PPO
 
 See [Environment Variables](../environment-variables.md#ppolicy) for every setting.
 
+### Progressive lockout and inactivity
+
+For a short lockout after each failed bind, set `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_MIN_DELAY` and `MAX_DELAY` to positive seconds, with `MIN_DELAY <= MAX_DELAY`. Keep policy lockout enabled.
+
+To block accounts after a period without successful authentication, enable `OPENLDAP_BOOTSTRAP_DATA_LAST_BIND=true` and set `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_MAX_IDLE` in seconds. This also requires policy lockout. `OPENLDAP_BOOTSTRAP_DATA_LAST_BIND_PRECISION` controls how often successful binds update the timestamp (default: one hour).
+
+These options apply on first bootstrap. Changing environment variables does not update an existing policy or server configuration.
+
 ## Referential Integrity
 
 `OPENLDAP_BOOTSTRAP_REFINT=true` enables the `refint` overlay. When an entry is renamed or deleted, references to it are updated or removed in other entries, so groups do not keep members that no longer exist.
@@ -49,6 +60,9 @@ See [Environment Variables](../environment-variables.md#ppolicy) for every setti
 | Variable                               | Default                             |
 | -------------------------------------- | ----------------------------------- |
 | `OPENLDAP_BOOTSTRAP_REFINT_ATTRIBUTES` | `member uniqueMember manager owner` |
+| `OPENLDAP_BOOTSTRAP_REFINT_NOTHING_DN` | empty |
+
+Set `OPENLDAP_BOOTSTRAP_REFINT_NOTHING_DN` to a placeholder DN if deleting the last member would leave a group invalid. Bootstrap creates a passwordless role at that DN; its parent must exist.
 
 ## Unique Attributes
 

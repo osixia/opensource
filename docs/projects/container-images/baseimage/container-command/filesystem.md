@@ -36,6 +36,16 @@ Use "container users [command] --help" for more information about a command.
 
 ## watch
 
+Run a command when a configuration file changes:
+
+```bash
+container watch /etc/my-app/config.yaml --exec /usr/local/bin/reload-my-app
+```
+
+The file must exist when the watcher starts. It detects writes, file replacements and Kubernetes projected-volume symlink updates. Mount a ConfigMap or Secret as a directory to receive those updates.
+
+Callbacks run one after another. Use `--once` to exit after the first change, or repeat `--exec` to run several commands. For shell operators such as `&&`, put the logic in a script and pass its path to `--exec`.
+
 ```
 Watch files
 

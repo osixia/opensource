@@ -17,7 +17,7 @@ nav:
     - projects/index.md
     - Container Images:
         - projects/container-images/index.md
-        - osixia/baseimage:
+        - Baseimage:
           - projects/container-images/baseimage/index.md
           - projects/container-images/baseimage/quickstart.md
           - projects/container-images/baseimage/how-it-works.md
@@ -51,14 +51,14 @@ nav:
             - projects/container-images/baseimage/tutorials/index.md
             - projects/container-images/baseimage/tutorials/nginx.md
             - projects/container-images/baseimage/tutorials/nginx-php-fpm.md
-        - osixia/keepalived:
+        - Keepalived:
           - projects/container-images/keepalived/index.md
           - projects/container-images/keepalived/quickstart.md
           - projects/container-images/keepalived/configuration.md
           - projects/container-images/keepalived/troubleshooting.md
           - projects/container-images/keepalived/upgrade.md
           - projects/container-images/keepalived/environment-variables.md
-        - osixia/openldap:
+        - OpenLDAP:
           - projects/container-images/openldap/index.md
           - projects/container-images/openldap/quickstart.md
           - projects/container-images/openldap/how-it-works.md
@@ -74,6 +74,24 @@ nav:
           - projects/container-images/openldap/upgrade.md
           - projects/container-images/openldap/ldap-toolkit.md
           - projects/container-images/openldap/environment-variables.md
+    - Kubernetes:
+        - projects/kubernetes/index.md
+        - Helm charts:
+            - projects/kubernetes/helm-charts/index.md
+            - projects/kubernetes/helm-charts/openldap.md
+            - projects/kubernetes/helm-charts/phpldapadmin.md
+            - projects/kubernetes/helm-charts/examples.md
+        - Tools:
+            - projects/kubernetes/tools/index.md
+            - kube-network-detector:
+                - projects/kubernetes/kube-network-detector/index.md
+                - projects/kubernetes/kube-network-detector/quickstart.md
+                - projects/kubernetes/kube-network-detector/configuration.md
+                - projects/kubernetes/kube-network-detector/troubleshooting.md
+    - Build & CI:
+        - projects/build-and-ci/index.md
+        - dagger-build:
+            - projects/build-and-ci/dagger-build/index.md
   - contribute.md
   - sponsor.md
 

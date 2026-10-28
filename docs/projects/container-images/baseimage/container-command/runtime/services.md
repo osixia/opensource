@@ -114,6 +114,8 @@ Flags:
 
 ## status
 
+Use `container services status --json` for structured output.
+
 ```
 Print services status
 
@@ -121,6 +123,8 @@ Usage:
   container services status [service|tag:name]... [flags]
 
 Flags:
+      --json                print status as JSON
+
   -l, --log-level string    set log level, choices: error, warning, info, debug, trace (default "info")
       --quiet               show errors only
   -o, --log-format string   set log format, choices: console, json (default "console")

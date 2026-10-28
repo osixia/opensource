@@ -32,8 +32,10 @@ tutorials/nginx-php-fpm/
 ├── Dockerfile
 └── services
     └── php-fpm
+        ├── .stop-signal
         ├── config
-        │   └── default
+        │   ├── default
+        │   └── global.conf
         ├── install.sh
         └── process.sh
 ```
@@ -58,6 +60,7 @@ Executed at build time. It:
 - disables `expose_php`
 - sets `cgi.fix_pathinfo=0`
 - configures PHP-FPM to listen on `/run/container/php-fpm.sock`
+- copies `config/global.conf` into the PHP-FPM `pool.d` directory
 - configures the socket owner and group as `www-data`
 - replaces the default Nginx site with the provided PHP-enabled vhost
 - creates `/var/www/html/phpinfo.php`
@@ -79,6 +82,12 @@ Executed as the managed PHP-FPM process. It:
 - logs the container IP address and the `phpinfo.php` URL
 - starts PHP-FPM in the foreground with `--nodaemonize`
 - forwards any extra entrypoint arguments to PHP-FPM
+
+### Graceful shutdown
+
+`services/php-fpm/.stop-signal` contains `SIGQUIT`. The `config/global.conf` file sets `process_control_timeout = 15s` so PHP-FPM gives running requests time to finish.
+
+Keep this application timeout within `container --kill-all-timeout` (`15s` by default). The Compose example uses `stop_grace_period: 30s` for both services, giving the supervisor time to finish before Docker kills the container.
 
 ### `docker-compose.yml`
 
