@@ -4,6 +4,8 @@ Shared Go tooling for building and testing Osixia container images with Dagger. 
 
 It is a Go library using the standalone Dagger SDK, rather than a standalone application or a native Dagger module. It requires Go 1.26.1 or newer and uses Dagger SDK/engine 0.21.10.
 
+![A beaver builder assembles orange containers in a workshop beside a conveyor with a green test indicator.](../../../assets/images/osixia-dagger-build.png)
+
 ## ⚡ Try it in an existing project
 
 You need Go and a running Docker engine for the default local Dagger setup. From a checkout of `container-baseimage`:
