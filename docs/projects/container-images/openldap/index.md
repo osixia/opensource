@@ -1,4 +1,4 @@
-# OpenLDAP
+# osixia/openldap
 
 [docker hub]: https://hub.docker.com/r/osixia/openldap
 [github]: https://github.com/osixia/container-openldap

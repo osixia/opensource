@@ -1,4 +1,4 @@
-# Baseimage
+# osixia/baseimage
 
 [docker hub]: https://hub.docker.com/r/osixia/baseimage
 [github]: https://github.com/osixia/container-baseimage

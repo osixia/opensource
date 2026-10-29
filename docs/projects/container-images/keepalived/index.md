@@ -1,4 +1,4 @@
-# Keepalived
+# osixia/keepalived
 
 [docker hub]: https://hub.docker.com/r/osixia/keepalived
 [github]: https://github.com/osixia/container-keepalived

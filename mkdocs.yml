@@ -18,7 +18,7 @@ nav:
     - Container Images:
         - projects/container-images/index.md
         - Baseimage:
-          - projects/container-images/baseimage/index.md
+          - Baseimage: projects/container-images/baseimage/index.md
           - projects/container-images/baseimage/quickstart.md
           - projects/container-images/baseimage/how-it-works.md
           - projects/container-images/baseimage/advanced-runtime-guide.md
@@ -52,14 +52,14 @@ nav:
             - projects/container-images/baseimage/tutorials/nginx.md
             - projects/container-images/baseimage/tutorials/nginx-php-fpm.md
         - Keepalived:
-          - projects/container-images/keepalived/index.md
+          - Keepalived: projects/container-images/keepalived/index.md
           - projects/container-images/keepalived/quickstart.md
           - projects/container-images/keepalived/configuration.md
           - projects/container-images/keepalived/troubleshooting.md
           - projects/container-images/keepalived/upgrade.md
           - projects/container-images/keepalived/environment-variables.md
         - OpenLDAP:
-          - projects/container-images/openldap/index.md
+          - OpenLDAP: projects/container-images/openldap/index.md
           - projects/container-images/openldap/quickstart.md
           - projects/container-images/openldap/how-it-works.md
           - '🚀 Bootstrap':

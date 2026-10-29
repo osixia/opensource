@@ -30,9 +30,9 @@ This documentation includes (but is not limited to) the following projects:
 | **[container-baseimage](https://github.com/osixia/container-baseimage)**  | A container base image to build reliable single- or multi-process images quickly 🐳✨🌴 |
 | **[container-keepalived](https://github.com/osixia/container-keepalived/)** | Keepalived container image 🐳🛟🌴 |
 | **[container-openldap](https://github.com/osixia/container-openldap/)** | OpenLDAP container image 🐳🪪🌴 |
-| **[kube-network-detector](https://github.com/osixia/kube-network-detector)** | Detect VIP routing and TCP connectivity, and label Kubernetes nodes |
-| **[helm-charts](https://github.com/osixia/helm-charts)** | Deploy OpenLDAP and phpLDAPadmin on Kubernetes |
-| **[dagger-build](https://github.com/osixia/dagger-build)** | Shared Go tooling to build and test container images with Dagger |
+| **[kube-network-detector](https://github.com/osixia/kube-network-detector)** | Kubernetes network detector for VIP routing and peer connectivity ☸️📡🌴 |
+| **[helm-charts](https://github.com/osixia/helm-charts)** | Helm charts for deploying Osixia applications on Kubernetes ☸️📦🌴 |
+| **[dagger-build](https://github.com/osixia/dagger-build)** | Shared Dagger build toolkit for container images 🐳🛠️🌴 |
 
 Read the guides at **[opensource.osixia.net](https://opensource.osixia.net)**.
 
