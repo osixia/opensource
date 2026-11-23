@@ -68,7 +68,7 @@ On a fresh installation:
 docker run --name openldap \
   -e OPENLDAP_BOOTSTRAP_DATA_TREE=true \
   -e OPENLDAP_BOOTSTRAP_DATA_ADMIN=true \
-  osixia/openldap:2.6.15-rc
+  osixia/openldap:2.6.15
 ```
 
 The default DN is `cn=admin,ou=services,dc=example,dc=org`. Supply its hash with `OPENLDAP_BOOTSTRAP_DATA_ADMIN_PASSWORD_HASHED`, or use the generated password printed at bootstrap.

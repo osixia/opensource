@@ -147,8 +147,8 @@ To read a password from a file or standard input:
 
 ```bash
 docker run --rm --user "$UID" -v "$PWD/password.txt:/run/secrets/password:ro" \
-  osixia/openldap:2.6.15-rc run -- openldap-ctl password hash --file /run/secrets/password
-docker run --rm -i osixia/openldap:2.6.15-rc run -- \
+  osixia/openldap:2.6.15 run -- openldap-ctl password hash --file /run/secrets/password
+docker run --rm -i osixia/openldap:2.6.15 run -- \
   openldap-ctl password hash --stdin < password.txt
 ```
 
