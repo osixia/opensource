@@ -12,7 +12,9 @@ On the data database, with default settings:
 | `ldap` user through `ldapi:///`       | Full access (`manage`)                                                                   |
 | Authenticated user                    | Reads a short list of attributes on every entry; changes their own password              |
 | Anonymous                             | Can only authenticate (bind); cannot read anything                                       |
-| Read-only account (optional)          | Reads everything except passwords                                                        |
+| Directory admin (optional)            | Manages users/groups and resets user passwords; cannot read password hashes or manage service accounts |
+| Management account (optional)         | Reads users/groups and resets user passwords; cannot read password hashes or edit other attributes |
+| Read-only account (optional)          | Reads everything except passwords and, with ppolicy, password history |
 | Replication account (optional)        | Reads everything, including passwords                                                    |
 
 ### Authenticated Users
@@ -54,6 +56,37 @@ docker run --name openldap \
 | `OPENLDAP_BOOTSTRAP_DATA_READONLY_DN`              | `cn=readonly,${OPENLDAP_BOOTSTRAP_SUFFIX}` |
 | `OPENLDAP_BOOTSTRAP_DATA_READONLY_PASSWORD_HASHED` | empty: a password is generated and logged  |
 
+When ppolicy is enabled, the account is also denied access to `pwdHistory`. Existing directories need an explicit ACL update to gain this restriction.
+
+## Directory Administrator
+
+Use this account for day-to-day administration, including login to phpLDAPadmin 2. It has a real directory entry; the data root DN is a virtual identity and cannot log in to phpLDAPadmin 2.
+
+On a fresh installation:
+
+```bash
+docker run --name openldap \
+  -e OPENLDAP_BOOTSTRAP_DATA_TREE=true \
+  -e OPENLDAP_BOOTSTRAP_DATA_ADMIN=true \
+  osixia/openldap:2.6.15-rc
+```
+
+The default DN is `cn=admin,ou=services,dc=example,dc=org`. Supply its hash with `OPENLDAP_BOOTSTRAP_DATA_ADMIN_PASSWORD_HASHED`, or use the generated password printed at bootstrap.
+
+The administrator can create, edit, rename and delete users/groups and reset user passwords. It cannot read password hashes/history, access `cn=config`, or change service accounts, including its own. Use the data root to rotate its password.
+
+## Management Account
+
+Use this account for an application that looks up users/groups and resets user passwords, such as Authelia or Keycloak. Enable `OPENLDAP_BOOTSTRAP_DATA_TREE=true` and `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT=true` on a fresh installation.
+
+The default DN is `cn=management,ou=services,dc=example,dc=org`. Supply its hash with `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT_PASSWORD_HASHED`. It cannot edit profiles/groups or read password hashes/history with the default hidden-attribute settings.
+
+Tree and account creation are independent. If you create the branches through custom LDIF, create their parent entries before the account fragments run.
+
+Admin and management password resets bypass LDAP password quality, history and minimum-age checks. Enforce the required password policy in the application performing the reset.
+
+For complete Helm setups with these accounts, see [Authelia and Keycloak examples](../../../kubernetes/helm-charts/examples.md).
+
 ## Monitor Database
 
 The monitor database (`cn=Monitor`) is always created. `OPENLDAP_BOOTSTRAP_MONITOR` sets its `olcMonitoring` value.
@@ -67,7 +100,7 @@ Set `OPENLDAP_BOOTSTRAP_MONITOR_READONLY=true` to create an account that can rea
 
 ## Default Rules
 
-These are the rules generated for the data database, in order. Rules for optional accounts are only present when the feature is enabled.
+These are the base rules, plus read-only and replication rules when enabled. Scoped admin and management rules run before them when those accounts are enabled.
 
 ``` ldif
 olcAccess: to *
@@ -108,6 +141,10 @@ Access rules are built from separate LDIF fragments, so one part can be changed 
 
 | Fragment                                     | Content                                         |
 | -------------------------------------------- | ----------------------------------------------- |
+| `61-database-admin-ppolicy-acl.ldif.optional.template` | Hide password history from the directory admin when ppolicy is enabled |
+| `62-database-admin-acl.ldif.template`         | Scoped directory administrator |
+| `63-database-management-acl.ldif.template`    | Scoped management account |
+| `64-database-readonly-ppolicy-acl.ldif.optional.template` | Hide password history from the read-only account |
 | `65-database-acl.ldif.template`              | Local administration, passwords, basic attributes |
 | `66-database-readonly-acl.ldif.template`     | Read-only account                               |
 | `67-database-replication-acl.ldif.template`  | Replication account                             |

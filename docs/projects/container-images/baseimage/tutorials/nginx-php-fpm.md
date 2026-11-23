@@ -32,6 +32,7 @@ tutorials/nginx-php-fpm/
 ├── Dockerfile
 └── services
     └── php-fpm
+        ├── .stop-signal
         ├── config
         │   ├── default
         │   └── global.conf
@@ -102,6 +103,8 @@ process_control_timeout = 15s
 
 Keep it within `container --kill-all-timeout` (also `15s` by default): whichever
 expires first can interrupt unfinished requests.
+
+The Compose example uses `stop_grace_period: 30s` for both services.
 
 ### `docker-compose.yml`
 

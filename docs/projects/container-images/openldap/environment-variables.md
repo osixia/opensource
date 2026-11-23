@@ -25,17 +25,36 @@ Defaults come from the `.env` files of the image. Variables passed to the contai
 | ----------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | `OPENLDAP_BOOTSTRAP_ORGANIZATION`                     | Organization name used in bootstrap data                                          | `Example Org`                                               |
 | `OPENLDAP_BOOTSTRAP_SUFFIX`                           | Base LDAP suffix; must start with `dc=`                                           | `dc=example,dc=org`                                         |
-| `OPENLDAP_BOOTSTRAP_MODULES`                          | OpenLDAP modules loaded during bootstrap                                          | `back_mdb.so argon2.so ppolicy.so unique.so refint.so memberof.so syncprov.so` |
+| `OPENLDAP_BOOTSTRAP_MODULES`                          | Modules loaded during bootstrap; `auto` selects modules for enabled features        | `auto` |
 | `OPENLDAP_BOOTSTRAP_SCHEMAS`                          | LDIF schemas imported during bootstrap                                            | `core.ldif cosine.ldif inetorgperson.ldif rfc2307bis.ldif`  |
 | `OPENLDAP_BOOTSTRAP_GLOBAL_SIZE_LIMIT`                         | Global LDAP size limit                                                            | `500`                                                       |
 | `OPENLDAP_BOOTSTRAP_GLOBAL_TIME_LIMIT`                         | Global LDAP time limit                                                            | `120`                                                       |
 | `OPENLDAP_BOOTSTRAP_GLOBAL_IDLE_TIMEOUT`                       | Global LDAP idle timeout                                                          | `3600`                                                      |
+| `OPENLDAP_BOOTSTRAP_GLOBAL_WRITE_TIMEOUT` | Blocked network write timeout in seconds; `0` disables it | `0` |
+| `OPENLDAP_BOOTSTRAP_GLOBAL_CONN_MAX_PENDING` | Pending requests per anonymous connection | `100` |
+| `OPENLDAP_BOOTSTRAP_GLOBAL_CONN_MAX_PENDING_AUTH` | Pending requests per authenticated connection | `1000` |
+| `OPENLDAP_BOOTSTRAP_GLOBAL_SOCKBUF_MAX_INCOMING` | Maximum anonymous LDAP message size in bytes | `262143` |
+| `OPENLDAP_BOOTSTRAP_GLOBAL_SOCKBUF_MAX_INCOMING_AUTH` | Maximum authenticated LDAP message size in bytes | `4194303` |
 | `OPENLDAP_BOOTSTRAP_FRONTEND_PASSWORD_HASH`                      | Password hash scheme configured in `olcPasswordHash`                              | `{ARGON2}`                                                  |
 | `OPENLDAP_BOOTSTRAP_CONFIG_ROOT_DN`                   | Root DN for `cn=config`                                                           | `cn=admin,cn=config`                                        |
 | `OPENLDAP_BOOTSTRAP_CONFIG_ROOT_PASSWORD_HASHED`      | Hashed password for `cn=config`; generated if empty                               | empty                                                        |
 | `OPENLDAP_BOOTSTRAP_DATA_DATABASE_MAX_SIZE`           | MDB max size for main database                                                    | `10737418240`                                               |
+| `OPENLDAP_BOOTSTRAP_DATA_LAST_BIND` | Track successful authentication in `pwdLastSuccess` | `false` |
+| `OPENLDAP_BOOTSTRAP_DATA_LAST_BIND_PRECISION` | Minimum seconds between last-bind timestamp updates | `3600` |
 | `OPENLDAP_BOOTSTRAP_DATA_ROOT_DN`                     | Root DN for main database                                                         | `cn=admin,${OPENLDAP_BOOTSTRAP_SUFFIX}`                     |
 | `OPENLDAP_BOOTSTRAP_DATA_ROOT_PASSWORD_HASHED`        | Hashed password for main database root DN; generated if empty                     | empty                                                        |
+| `OPENLDAP_BOOTSTRAP_DATA_TREE` | Create the users, groups and services branches | `false` |
+| `OPENLDAP_BOOTSTRAP_DATA_TREE_USERS_DN` | Users branch | `ou=users,${OPENLDAP_BOOTSTRAP_SUFFIX}` |
+| `OPENLDAP_BOOTSTRAP_DATA_TREE_GROUPS_DN` | Groups branch | `ou=groups,${OPENLDAP_BOOTSTRAP_SUFFIX}` |
+| `OPENLDAP_BOOTSTRAP_DATA_TREE_SERVICES_DN` | Services branch | `ou=services,${OPENLDAP_BOOTSTRAP_SUFFIX}` |
+| `OPENLDAP_BOOTSTRAP_DATA_ADMIN` | Create a scoped directory administrator | `false` |
+| `OPENLDAP_BOOTSTRAP_DATA_ADMIN_DN` | Directory administrator DN | `cn=admin,${OPENLDAP_BOOTSTRAP_DATA_TREE_SERVICES_DN}` |
+| `OPENLDAP_BOOTSTRAP_DATA_ADMIN_PASSWORD_HASHED` | Administrator hash; generated if empty when enabled | empty |
+| `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT` | Create a user/group reader and password-reset account | `false` |
+| `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT_DN` | Management account DN | `cn=management,${OPENLDAP_BOOTSTRAP_DATA_TREE_SERVICES_DN}` |
+| `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT_PASSWORD_HASHED` | Management hash; generated if empty when enabled | empty |
+| `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT_HIDDEN_ATTRIBUTES` | Attributes hidden from management | `userPassword,shadowLastChange` |
+| `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT_HIDDEN_PPOLICY_ATTRIBUTES` | Additional hidden attributes when ppolicy is enabled | `pwdHistory` |
 | `OPENLDAP_BOOTSTRAP_DATA_READONLY`                    | Enable read-only data account creation                                            | `false`                                                     |
 | `OPENLDAP_BOOTSTRAP_DATA_READONLY_DN`                 | DN of the read-only data account                                                  | `cn=readonly,${OPENLDAP_BOOTSTRAP_SUFFIX}`                  |
 | `OPENLDAP_BOOTSTRAP_DATA_READONLY_PASSWORD_HASHED`    | Hashed password of the read-only data account; generated if empty when enabled    | empty                                                        |
@@ -71,6 +90,7 @@ See [Overlays](bootstrap/overlays.md#referential-integrity).
 | -------------------------------------- | --------------------------------------------- | ----------------------------------- |
 | `OPENLDAP_BOOTSTRAP_REFINT`            | Enable the `refint` overlay during bootstrap  | `false`                             |
 | `OPENLDAP_BOOTSTRAP_REFINT_ATTRIBUTES` | Attributes maintained by the `refint` overlay | `member uniqueMember manager owner` |
+| `OPENLDAP_BOOTSTRAP_REFINT_NOTHING_DN` | Replacement DN for empty groups; creates a passwordless role when set | empty |
 
 ## PPolicy
 
@@ -85,7 +105,7 @@ See [Overlays](bootstrap/overlays.md#password-policy).
 | `OPENLDAP_BOOTSTRAP_PPOLICY_GROUP_DN`                       | DN of the policy container created in the main database | `ou=policies,${OPENLDAP_BOOTSTRAP_SUFFIX}`         |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_POLICY_DN`              | DN of the default password policy                       | `cn=default,${OPENLDAP_BOOTSTRAP_PPOLICY_GROUP_DN}` |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_MIN_LENGTH`             | Value for `pwdMinLength`                                | `12`                                               |
-| `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_CHECK_QUALITY`          | Value for `pwdCheckQuality`                             | `0`                                                |
+| `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_CHECK_QUALITY`          | Value for `pwdCheckQuality`                             | `1`                                                |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_IN_HISTORY`             | Value for `pwdInHistory`                                | `12`                                               |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_ALLOW_USER_CHANGE`      | Value for `pwdAllowUserChange`                          | `true`                                             |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_SAFE_MODIFY`            | Value for `pwdSafeModify`                               | `true`                                             |
@@ -95,6 +115,9 @@ See [Overlays](bootstrap/overlays.md#password-policy).
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_FAILURE_COUNT_INTERVAL` | Value for `pwdFailureCountInterval`                     | `300`                                              |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_LOCKOUT`                | Value for `pwdLockout`                                  | `true`                                             |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_LOCKOUT_DURATION`       | Value for `pwdLockoutDuration`                          | `900`                                              |
+| `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_MIN_DELAY` | Initial progressive lockout in seconds; `0` disables it | `0` |
+| `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_MAX_DELAY` | Progressive lockout cap; requires `0 < MIN_DELAY <= MAX_DELAY` and lockout enabled | `0` |
+| `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_MAX_IDLE` | Maximum inactivity in seconds; requires last-bind tracking and lockout enabled | `0` |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_MAX_AGE`                | Value for `pwdMaxAge`                                   | `7776000`                                          |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_EXPIRE_WARNING`         | Value for `pwdExpireWarning`                            | `1209600`                                          |
 | `OPENLDAP_BOOTSTRAP_PPOLICY_DEFAULT_GRACE_AUTH_NLIMIT`      | Value for `pwdGraceAuthNLimit`                          | `3`                                                |

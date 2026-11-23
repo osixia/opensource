@@ -65,6 +65,9 @@ All optional features are disabled by default and enabled with one variable.
 
 | Feature                    | Variable                                   | Documentation                              |
 | -------------------------- | ------------------------------------------ | ------------------------------------------ |
+| Users/groups/services branches | `OPENLDAP_BOOTSTRAP_DATA_TREE=true` | [Access Control](access-control.md#directory-administrator) |
+| Directory administrator | `OPENLDAP_BOOTSTRAP_DATA_ADMIN=true` | [Access Control](access-control.md#directory-administrator) |
+| Application management account | `OPENLDAP_BOOTSTRAP_DATA_MANAGEMENT=true` | [Access Control](access-control.md#management-account) |
 | Read-only data account     | `OPENLDAP_BOOTSTRAP_DATA_READONLY=true`    | [Access Control](access-control.md)        |
 | Read-only monitor account  | `OPENLDAP_BOOTSTRAP_MONITOR_READONLY=true` | [Access Control](access-control.md)        |
 | Password policy            | `OPENLDAP_BOOTSTRAP_PPOLICY=true`          | [Overlays](overlays.md#password-policy)    |

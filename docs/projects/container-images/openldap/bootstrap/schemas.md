@@ -72,12 +72,12 @@ To add a schema to an existing directory, load the LDIF file with `ldapadd` boun
 
 ## Modules
 
-Modules loaded at bootstrap are listed in `OPENLDAP_BOOTSTRAP_MODULES`:
+By default, `OPENLDAP_BOOTSTRAP_MODULES=auto` loads the modules needed by enabled features. To choose modules yourself, supply an ordered list, for example:
 
 ``` bash
 OPENLDAP_BOOTSTRAP_MODULES="back_mdb.so argon2.so ppolicy.so unique.so refint.so memberof.so syncprov.so"
 ```
 
-The image includes all OpenLDAP backends and overlays, plus the Argon2, PBKDF2 and SHA-2 password modules. Add a module name to the list to load it.
+The image includes all OpenLDAP backends and overlays, plus the Argon2, PBKDF2 and SHA-2 password modules. When using an explicit list, include the modules needed by your configured database, password hash and overlays.
 
 To use a module that is not part of the image, mount it in `/container/services/openldap/assets/module`: it is copied to the OpenLDAP modules directory at startup.

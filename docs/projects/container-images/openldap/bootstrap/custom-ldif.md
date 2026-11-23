@@ -75,6 +75,7 @@ This is how several files build one entry. The data database entry is assembled 
 | ------------------------------------ | ----------------------------------- |
 | `60-database.ldif.template`          | The entry itself, with its indexes  |
 | `61-database-replication.ldif.template` | Replication settings, when enabled |
+| `61-…` to `64-…`                    | Scoped admin/management rules and password-history restrictions, when enabled |
 | `65-database-acl.ldif.template`      | Default access rules                |
 | `66-…` and `67-…`                    | Access rules of optional accounts   |
 | `69-database-acl-close.ldif`         | Final deny-all rule                 |
@@ -103,7 +104,7 @@ Configuration fragments, in `config/base`:
 | `75-monitor-acl.ldif.template`   | Monitor database access rules                           |
 | `79-monitor-acl-close.ldif`      | Deny-all rule on the monitor database                   |
 
-Optional features add their own fragments: `01-` and `02-` for TLS, `03-`, `61-`, `67-` and `180-` for replication, `66-` and `76-` for read-only accounts, `100-` to `160-` for overlays.
+Optional features add their own fragments: `01-` and `02-` for TLS, `03-`, `61-`, `67-` and `180-` for replication, `61-` to `64-` for scoped admin/management and password-history restrictions, `66-` and `76-` for read-only accounts, `100-` to `170-` for overlays. Data fragments include `30-data-tree.ldif`, `70-database-admin-account.ldif` and `80-database-management-account.ldif`.
 
 Overlays are created in prefix order, and the order matters. Keep `syncprov` last, as with the built-in `180-` prefix.
 

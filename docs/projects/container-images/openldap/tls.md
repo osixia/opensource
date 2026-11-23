@@ -68,4 +68,14 @@ When TLS is required, [replication](replication.md#tls) uses StartTLS by default
 
 Certificate paths are stored in the configuration at bootstrap. To renew a certificate, replace the files at the same paths and restart the container.
 
+For automatic renewal handling, run the optional `openldap-tls-reload` service alongside the normal services. Add these arguments after the image name in your `docker run` command:
+
+```bash
+--exec openldap --exec openldap-bootstrap --exec openldap-upgrade --exec openldap-tls-reload
+```
+
+The watcher compares certificate contents and restarts the OpenLDAP process when they change. The container stays running, but LDAP connections can be interrupted briefly.
+
+With the [Helm chart](../../kubernetes/helm-charts/openldap.md#tls-for-a-new-installation), set `openldap.tlsReload.enabled=true` to run the watcher as a sidecar. Keep the certificate volume mounted as a directory so Kubernetes Secret updates remain visible.
+
 To change TLS settings on an existing directory, modify the `olcTLS*` attributes of `cn=config` with `ldapmodify`.

@@ -13,7 +13,7 @@ Always run two containers on the same volumes, one version apart:
 
 | Container      | Image version | Command                   |
 | -------------- | ------------- | ------------------------- |
-| Init container | `n-1`         | `-x openldap-pre-upgrade` |
+| Init container | `n-1`         | `-x openldap -x openldap-pre-upgrade --skip-process` |
 | Main container | `n`           | default                   |
 
 To upgrade, increment both versions: the init container moves to `n`, the main container to `n+1`.
@@ -38,7 +38,7 @@ Replace `<previous-version>` and `<new-version>` with image tags. The three volu
     services:
       openldap-pre-upgrade:
         image: osixia/openldap:<previous-version>
-        command: ["-x", "openldap-pre-upgrade"]
+        command: ["-x", "openldap", "-x", "openldap-pre-upgrade", "--skip-process"]
         volumes:
           - openldap-conf:/etc/openldap/slapd.d
           - openldap-data:/var/lib/openldap/openldap-data
@@ -72,7 +72,7 @@ Replace `<previous-version>` and `<new-version>` with image tags. The three volu
       initContainers:
         - name: openldap-pre-upgrade
           image: osixia/openldap:<previous-version>
-          args: ["-x", "openldap-pre-upgrade"]
+          args: ["-x", "openldap", "-x", "openldap-pre-upgrade", "--skip-process"]
           volumeMounts:
             - { name: conf, mountPath: /etc/openldap/slapd.d }
             - { name: data, mountPath: /var/lib/openldap/openldap-data }
@@ -98,7 +98,7 @@ Replace `<previous-version>` and `<new-version>` with image tags. The three volu
       -v openldap-conf:/etc/openldap/slapd.d \
       -v openldap-data:/var/lib/openldap/openldap-data \
       -v openldap-backups:/var/lib/openldap/openldap-backups \
-      osixia/openldap:<previous-version> -x openldap-pre-upgrade
+      osixia/openldap:<previous-version> -x openldap -x openldap-pre-upgrade --skip-process
 
     docker run --name openldap -p 389:3890 -p 636:6360 \
       -v openldap-conf:/etc/openldap/slapd.d \
@@ -108,6 +108,8 @@ Replace `<previous-version>` and `<new-version>` with image tags. The three volu
     ```
 
 If the backup fails, the init container exits with an error and the main container does not start.
+
+Selecting `openldap` with `--skip-process` prepares custom modules and schemas before the backup, without starting slapd. Mount the same custom resources in both containers when you use them.
 
 ## Migration Level
 

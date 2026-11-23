@@ -29,3 +29,5 @@
 - Looking for a setting? All of them are listed in [Environment Variables](environment-variables.md).
 
 This image is based on [osixia/baseimage](../baseimage/index.md).
+
+On Kubernetes, [kube-network-detector](../../kubernetes/kube-network-detector/index.md) can detect which node receives traffic for a VIP and label that node.

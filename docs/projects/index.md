@@ -4,9 +4,15 @@ hide:
 ---
 # Projects
 
-<div class="grid" markdown>
+<div class="grid cards" markdown>
 
 [Container images](container-images/index.md)
+{ .card }
+
+[Kubernetes](kubernetes/index.md)
+{ .card }
+
+[Build & CI](build-and-ci/index.md)
 { .card }
 
 </div>

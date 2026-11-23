@@ -117,6 +117,8 @@ Flags:
 
 ## status
 
+Use `container services status --json` for structured output.
+
 ```
 Print services status
 

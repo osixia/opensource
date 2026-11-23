@@ -70,6 +70,8 @@ Flags:
 
 ## status
 
+Use `container processes status --json` for structured output.
+
 ```
 Print processes status
 With no argument: print all processes status
@@ -94,6 +96,14 @@ container processes status --json --quiet
 ```
 
 ## check
+
+Use this in a container health check:
+
+```bash
+container processes check openldap
+```
+
+The command exits with code `1` if a selected process is down. Intentionally stopped processes are excluded. Without names, it checks processes of services linked to the entrypoint; specify names when using `--exec` to run a different selection.
 
 ```
 Check processes are up, for container health checks
