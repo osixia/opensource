@@ -19,7 +19,7 @@ helm search repo osixia
 
 Follow the [OpenLDAP guide](openldap.md) to prepare values and install a directory, then add [phpLDAPadmin](phpldapadmin.md) if you want a web interface.
 
-The guides follow the source charts: OpenLDAP chart `0.3.0` targets `osixia/openldap:2.6.15-rc`; phpLDAPadmin chart `0.2.1` targets `phpldapadmin/phpldapadmin:2.3.11`. Check `helm search repo osixia --versions` for published versions.
+The guides follow the source charts: OpenLDAP chart `0.4.1` targets `osixia/openldap:2.6.15`; phpLDAPadmin chart `0.2.1` targets `phpldapadmin/phpldapadmin:2.3.11`. Check `helm search repo osixia --versions` for published versions.
 
 ## Use a local checkout
 

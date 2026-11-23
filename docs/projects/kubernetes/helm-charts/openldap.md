@@ -9,7 +9,7 @@ You need Helm 3, `kubectl`, and a cluster with dynamic volume provisioning, or y
 Generate two different passwords and hashes, one for the data root and one for the configuration root:
 
 ```bash
-docker run --rm osixia/openldap:2.6.15-rc run -- openldap-ctl password generate
+docker run --rm osixia/openldap:2.6.15 run -- openldap-ctl password generate
 ```
 
 Run the command twice. Keep the passwords somewhere safe and put their `{ARGON2}...` hashes in `my-values.yaml`:
@@ -107,7 +107,7 @@ For an upgrade with the default pre-upgrade step enabled, set `previousImage.tag
 previousImage:
   tag: 2.6.15-beta  # example: replace with your currently running image tag
 image:
-  tag: 2.6.15-rc
+  tag: 2.6.15
 ```
 
 ```bash
