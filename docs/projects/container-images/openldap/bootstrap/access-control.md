@@ -46,7 +46,7 @@ Set `OPENLDAP_BOOTSTRAP_DATA_READONLY=true` to create an account that can read t
 ``` bash
 docker run --name openldap \
   -e OPENLDAP_BOOTSTRAP_DATA_READONLY=true \
-  osixia/openldap:2.6.15-rc
+  osixia/openldap:2.6.15
 ```
 
 | Variable                                           | Default                                    |

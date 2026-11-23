@@ -8,7 +8,7 @@ Run a basic OpenLDAP server:
 docker run --name openldap --hostname ldap.example.org -p 389:3890 -p 636:6360 \
   -e OPENLDAP_BOOTSTRAP_ORGANIZATION="Keycloakers Org" \
   -e OPENLDAP_BOOTSTRAP_SUFFIX="dc=keycloakers,dc=org" \
-  osixia/openldap:2.6.15-rc
+  osixia/openldap:2.6.15
 ```
 
 On first start the container bootstraps a new directory: it creates the configuration, the database for the suffix and the root entry, then starts `slapd`.
@@ -33,7 +33,7 @@ For persistent deployments, mount the configuration, data and backup directories
       -v openldap-conf:/etc/openldap/slapd.d \
       -v openldap-data:/var/lib/openldap/openldap-data \
       -v openldap-backups:/var/lib/openldap/openldap-backups \
-      osixia/openldap:2.6.15-rc
+      osixia/openldap:2.6.15
     ```
 
 === "Docker Compose"
@@ -41,7 +41,7 @@ For persistent deployments, mount the configuration, data and backup directories
     ``` yaml
     services:
       openldap:
-        image: osixia/openldap:2.6.15-rc
+        image: osixia/openldap:2.6.15
         container_name: openldap
         ports:
           - "389:3890"
@@ -98,7 +98,7 @@ A successful response returns the organization entry.
 Arguments specified after `--` are forwarded to the `slapd` process inside the container:
 
 ``` bash
-docker run osixia/openldap:2.6.15-rc -- -d -1
+docker run osixia/openldap:2.6.15 -- -d -1
 ```
 
 ## Debugging
@@ -110,14 +110,14 @@ The `--log-level debug --bash` options from `osixia/baseimage` enable debug logg
 If OpenLDAP keeps crashing, add `--skip-process` to start the container without launching service processes.
 
 ``` bash
-docker run -it osixia/openldap:2.6.15-rc --log-level debug --bash
-docker run -it osixia/openldap:2.6.15-rc --skip-process --log-level debug --bash
+docker run -it osixia/openldap:2.6.15 --log-level debug --bash
+docker run -it osixia/openldap:2.6.15 --skip-process --log-level debug --bash
 ```
 
 You can also increase the `slapd` log level with `OPENLDAP_DEBUG_LEVEL`:
 
 ``` bash
-docker run -e OPENLDAP_DEBUG_LEVEL=-1 osixia/openldap:2.6.15-rc
+docker run -e OPENLDAP_DEBUG_LEVEL=-1 osixia/openldap:2.6.15
 ```
 
 !!! note
@@ -128,6 +128,6 @@ docker run -e OPENLDAP_DEBUG_LEVEL=-1 osixia/openldap:2.6.15-rc
 To see all available command-line options:
 
 ``` bash
-docker run --rm osixia/openldap:2.6.15-rc --help # osixia/baseimage options
-docker run --rm osixia/openldap:2.6.15-rc -x openldap -- --help # slapd command-line options
+docker run --rm osixia/openldap:2.6.15 --help # osixia/baseimage options
+docker run --rm osixia/openldap:2.6.15 -x openldap -- --help # slapd command-line options
 ```
